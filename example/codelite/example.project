@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="example" InternalType="">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="ofxLibharu">
+    <VirtualDirectory Name="libs">
+      <VirtualDirectory Name="libharu">
+        <VirtualDirectory Name="include">
+          <File Name="../../libs/libharu/include/hpdf_config.h"/>
+          <File Name="../../libs/libharu/include/hpdf_u3d.h"/>
+          <File Name="../../libs/libharu/include/hpdf_utils.h"/>
+          <File Name="../../libs/libharu/include/hpdf_doc.h"/>
+          <File Name="../../libs/libharu/include/hpdf_info.h"/>
+          <File Name="../../libs/libharu/include/hpdf_streams.h"/>
+          <File Name="../../libs/libharu/include/hpdf_encryptdict.h"/>
+          <File Name="../../libs/libharu/include/hpdf_page_label.h"/>
+          <File Name="../../libs/libharu/include/hpdf_consts.h"/>
+          <File Name="../../libs/libharu/include/hpdf_objects.h"/>
+          <File Name="../../libs/libharu/include/hpdf_outline.h"/>
+          <File Name="../../libs/libharu/include/hpdf_pages.h"/>
+          <File Name="../../libs/libharu/include/hpdf_fontdef.h"/>
+          <File Name="../../libs/libharu/include/t4.h"/>
+          <File Name="../../libs/libharu/include/hpdf_types.h"/>
+          <File Name="../../libs/libharu/include/hpdf_namedict.h"/>
+          <File Name="../../libs/libharu/include/hpdf_exdata.h"/>
+          <File Name="../../libs/libharu/include/hpdf_3dmeasure.h"/>
+          <File Name="../../libs/libharu/include/hpdf_conf.h"/>
+          <File Name="../../libs/libharu/include/hpdf_mmgr.h"/>
+          <File Name="../../libs/libharu/include/hpdf_image.h"/>
+          <File Name="../../libs/libharu/include/hpdf_font.h"/>
+          <File Name="../../libs/libharu/include/hpdf_encrypt.h"/>
+          <File Name="../../libs/libharu/include/hpdf_error.h"/>
+          <File Name="../../libs/libharu/include/hpdf_encoder.h"/>
+          <File Name="../../libs/libharu/include/hpdf.h"/>
+          <File Name="../../libs/libharu/include/hpdf_pdfa.h"/>
+          <File Name="../../libs/libharu/include/hpdf_list.h"/>
+          <File Name="../../libs/libharu/include/hpdf_gstate.h"/>
+          <File Name="../../libs/libharu/include/hpdf_catalog.h"/>
+          <File Name="../../libs/libharu/include/hpdf_version.h"/>
+          <File Name="../../libs/libharu/include/hpdf_annotation.h"/>
+          <File Name="../../libs/libharu/include/hpdf_ext_gstate.h"/>
+          <File Name="../../libs/libharu/include/hpdf_destination.h"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="src">
+          <File Name="../../libs/libharu/src/hpdf_font.c"/>
+          <File Name="../../libs/libharu/src/hpdf_page_operator.c"/>
+          <File Name="../../libs/libharu/src/hpdf_objects.c"/>
+          <File Name="../../libs/libharu/src/hpdf_u3d.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_cns.c"/>
+          <File Name="../../libs/libharu/src/hpdf_destination.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encryptdict.c"/>
+          <File Name="../../libs/libharu/src/hpdf_xref.c"/>
+          <File Name="../../libs/libharu/src/hpdf_gstate.c"/>
+          <File Name="../../libs/libharu/src/hpdf_info.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encoder_utf.c"/>
+          <File Name="../../libs/libharu/src/hpdf_font_cid.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_cid.c"/>
+          <File Name="../../libs/libharu/src/hpdf_list.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_cnt.c"/>
+          <File Name="../../libs/libharu/src/hpdf_image_png.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_base14.c"/>
+          <File Name="../../libs/libharu/src/hpdf_annotation.c"/>
+          <File Name="../../libs/libharu/src/hpdf_font_type1.c"/>
+          <File Name="../../libs/libharu/src/hpdf_ext_gstate.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encoder.c"/>
+          <File Name="../../libs/libharu/src/hpdf_dict.c"/>
+          <File Name="../../libs/libharu/src/hpdf_font_tt.c"/>
+          <File Name="../../libs/libharu/src/hpdf_catalog.c"/>
+          <File Name="../../libs/libharu/src/hpdf_pages.c"/>
+          <File Name="../../libs/libharu/src/hpdf_exdata.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encoder_cns.c"/>
+          <File Name="../../libs/libharu/src/hpdf_boolean.c"/>
+          <File Name="../../libs/libharu/src/hpdf_image_ccitt.c"/>
+          <File Name="../../libs/libharu/src/hpdf_image.c"/>
+          <File Name="../../libs/libharu/src/hpdf_error.c"/>
+          <File Name="../../libs/libharu/src/hpdf_page_label.c"/>
+          <File Name="../../libs/libharu/src/hpdf_number.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encrypt.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encoder_cnt.c"/>
+          <File Name="../../libs/libharu/src/hpdf_mmgr.c"/>
+          <File Name="../../libs/libharu/src/hpdf_doc_png.c"/>
+          <File Name="../../libs/libharu/src/hpdf_null.c"/>
+          <File Name="../../libs/libharu/src/hpdf_namedict.c"/>
+          <File Name="../../libs/libharu/src/hpdf_binary.c"/>
+          <File Name="../../libs/libharu/src/hpdf_pdfa.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encoder_jp.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_kr.c"/>
+          <File Name="../../libs/libharu/src/hpdf_string.c"/>
+          <File Name="../../libs/libharu/src/hpdf_doc.c"/>
+          <File Name="../../libs/libharu/src/hpdf_array.c"/>
+          <File Name="../../libs/libharu/src/hpdf_outline.c"/>
+          <File Name="../../libs/libharu/src/hpdf_name.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_jp.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_type1.c"/>
+          <File Name="../../libs/libharu/src/hpdf_real.c"/>
+          <File Name="../../libs/libharu/src/hpdf_encoder_kr.c"/>
+          <File Name="../../libs/libharu/src/hpdf_utils.c"/>
+          <File Name="../../libs/libharu/src/hpdf_fontdef_tt.c"/>
+          <File Name="../../libs/libharu/src/hpdf_streams.c"/>
+          <File Name="../../libs/libharu/src/hpdf_3dmeasure.c"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="src">
+      <File Name="../../src/ofxlibharu.h"/>
+      <File Name="../../src/ofxlibharu.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../src/testApp.cpp"/>
+    <File Name="../src/testApp.h"/>
+    <File Name="../src/main.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="config">
+    <File Name="../Makefile"/>
+    <File Name="../config.make"/>
+    <File Name="../addons.make"/>
+  </VirtualDirectory>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="./$(ProjectName)_debug" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/../bin" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean Debug</CleanCommand>
+        <BuildCommand>make Debug</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)/..</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/../bin" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean Release</CleanCommand>
+        <BuildCommand>make Release</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)/..</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

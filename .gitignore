@@ -1,4 +1,5 @@
-# Some general ignore patterns
+# Some general ignore 
+*.pdf
 
 */bin/*
 !*/bin/data/

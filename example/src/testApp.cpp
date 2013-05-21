@@ -3,6 +3,12 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 	pdf.setup();
+	pdf.enable();
+
+	ofLine(0, 0, 200, 200);
+
+	pdf.disable();
+
 	pdf.save("test.pdf");
 }
 

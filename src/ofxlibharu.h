@@ -3,9 +3,10 @@
 
 #include "ofMain.h"
 #include "hpdf.h"
-ofGLRenderer
+
 class ofxLibharu: public ofBaseRenderer {
 public:
+
 	enum PAGE_SIZE {
 	    A5,
 	    A4,
@@ -24,14 +25,19 @@ public:
 	void setup(PAGE_SIZE size = A4, ORIENTATION o = PORTRAIT);
 
 	void setPageSize(PAGE_SIZE size);
+	void setPageSize(PAGE_SIZE size, ORIENTATION o);
 	void setPageSize(float x, float y);
 	void setOrientation(ORIENTATION o);
+	void setDPI(int dpi);
 
 	void newPage();
 	void newPage(PAGE_SIZE size, ORIENTATION o = PORTRAIT);
 	void newPage(float w, float h);
 
 	void save(string path, bool inDataFolder = true);
+
+	void enable();
+	void disable();
 
 	/********** FUNCTIONS FOR OF BASE RENDERER *******************************/
 	string getType();
@@ -98,15 +104,28 @@ public:
 	void viewport(float x = 0, float y = 0, float width = 0, float height = 0, bool invertY = true);
 	void viewport(ofRectangle viewport);
 
+	void draw(of3dPrimitive& model, ofPolyRenderMode renderType);
+	void draw(ofMesh& vertexData, bool useColors, bool useTextures, bool useNormals);
+	void draw(ofMesh& vertexData, ofPolyRenderMode renderType, bool useColors, bool useTextures, bool useNormals);
+	void update();
+
 private:
+	void updatePage();
 	ofVec2f pageSize;
+	ofVec2f pixelRatio;
 	ORIENTATION orientation;
+	float dpi;
+	bool hasDPI;
 
 	float convertX(float x);
 	float convertY(float y);
 
 	HPDF_Doc  pdf;
 	HPDF_Page page;
+
+
+	ofPtr<ofBaseRenderer> selfPtr;
+	ofPtr<ofBaseRenderer> oldRendererPtr;
 };
 
 #endif // OFXLIBHARU_H

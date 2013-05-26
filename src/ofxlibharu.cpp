@@ -443,4 +443,26 @@ void ofxLibharu::draw(ofMesh& vertexData, ofPolyRenderMode renderType, bool useC
 void ofxLibharu::update() {
 }
 
-
+/*
+void RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K)
+{
+    C = 1 - (R / 255);
+    M = 1 - (G / 255);
+    Y = 1 - (B / 255);
+    int TempK = 1;
+    if (C < TempK) TempK = C;
+    if (M < TempK) TempK = M;
+    if (Y < TempK) TempK = Y;
+    if (TempK == 1)
+    {
+        C = M = Y = 0;
+    }
+    else
+    {
+        C = (C - TempK) / (1 - TempK);
+        M = (M - TempK) / (1 - TempK);
+        Y = (Y - TempK) / (1 - TempK);
+    }
+    K = TempK;
+}
+*/

@@ -119,7 +119,18 @@ void ofxLibharu::newPage() {
 void ofxLibharu::save(string path, bool inDataFolder) {
 	if(inDataFolder)
 		path = ofToDataPath(path, true);
+	lastFileSaved = path;
 	HPDF_SaveToFile(pdf, path.c_str());
+}
+
+void ofxLibharu::openLastSave()
+{
+	#ifdef TARGET_LINUX
+		string com = "xdg-open "+lastFileSaved;
+		system(com.c_str());
+	#else
+		ofLogError() << "SORRY OPEN LAST SAVE IS ONLY IMPLEMENTED ON LINUX";
+	#endif
 }
 
 float ofxLibharu::convertX(float x) {
@@ -236,6 +247,7 @@ ofRectMode ofxLibharu::getRectMode() {
 }
 
 string ofxLibharu::getType() {
+	return "PDF";
 }
 
 int ofxLibharu::getViewportHeight() {
@@ -363,3 +375,4 @@ void ofxLibharu::draw(ofMesh& vertexData, ofPolyRenderMode renderType, bool useC
 
 void ofxLibharu::update() {
 }
+

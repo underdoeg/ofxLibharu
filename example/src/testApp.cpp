@@ -10,6 +10,9 @@ void testApp::setup(){
 	pdf.disable();
 
 	pdf.save("test.pdf");
+	pdf.openLastSave();
+	
+	ofExit();
 }
 
 //--------------------------------------------------------------

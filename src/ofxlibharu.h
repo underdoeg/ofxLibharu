@@ -35,6 +35,7 @@ public:
 	void newPage(float w, float h);
 
 	void save(string path, bool inDataFolder = true);
+	void openLastSave();
 
 	void enable();
 	void disable();
@@ -126,6 +127,8 @@ private:
 
 	ofPtr<ofBaseRenderer> selfPtr;
 	ofPtr<ofBaseRenderer> oldRendererPtr;
+	
+	string lastFileSaved;
 };
 
 #endif // OFXLIBHARU_H

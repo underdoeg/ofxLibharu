@@ -3,10 +3,15 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 	pdf.setup();
+	
 	pdf.enable();
-
+	
+	ofFill();
+	
 	ofLine(0, 0, 200, 200);
-
+	
+	ofRect(4, 4, 10, 10);
+	
 	pdf.disable();
 
 	pdf.save("test.pdf");

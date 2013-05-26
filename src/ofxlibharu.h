@@ -7,6 +7,23 @@
 class ofxLibharu: public ofBaseRenderer {
 public:
 
+	class CMYK{
+	public:
+		CMYK(){
+			cyan = magenta = yellow = 0;
+			black = 1;
+		}
+	
+		CMYK(float c, float m, float y, float k){
+			cyan = c;
+			magenta = m;
+			yellow = y;
+			black = k;
+		}
+		
+		float cyan, magenta, yellow, black;
+	};
+
 	enum PAGE_SIZE {
 	    A5,
 	    A4,
@@ -39,6 +56,12 @@ public:
 
 	void enable();
 	void disable();
+	
+	void setCmykBackground(float c, float m, float y, float k);
+	void setCmykForeground(float c, float m, float y, float k);
+	
+	void disableBackground();
+	void disableForeground();
 
 	/********** FUNCTIONS FOR OF BASE RENDERER *******************************/
 	string getType();
@@ -120,15 +143,21 @@ private:
 
 	float convertX(float x);
 	float convertY(float y);
+	float convertDistance(float f);
 
 	HPDF_Doc  pdf;
 	HPDF_Page page;
-
 
 	ofPtr<ofBaseRenderer> selfPtr;
 	ofPtr<ofBaseRenderer> oldRendererPtr;
 	
 	string lastFileSaved;
+	
+	CMYK color;
+	
+	ofFillFlag fillFlag;
+	bool bLineSmoothing;
+	float lineWidth;
 };
 
 #endif // OFXLIBHARU_H

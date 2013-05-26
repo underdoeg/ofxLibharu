@@ -24,6 +24,9 @@ ofxLibharu::~ofxLibharu() {
 
 void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	pdf = HPDF_New (error_handler, NULL);
+	setCmykBackground(0, 0, 0, 1);
+	setCmykForeground(0, 0, 0, 1);
+	setFillMode(OF_FILLED);
 	newPage();
 	setOrientation(o);
 	setPageSize(size);
@@ -133,6 +136,10 @@ void ofxLibharu::openLastSave()
 	#endif
 }
 
+float ofxLibharu::convertDistance(float f){
+	return f * pixelRatio.x;
+}
+
 float ofxLibharu::convertX(float x) {
 	return x * pixelRatio.x;
 }
@@ -150,6 +157,28 @@ void ofxLibharu::disable() {
 	ofSetCurrentRenderer(oldRendererPtr);
 }
 
+void ofxLibharu::setCmykBackground(float c, float m, float y, float k)
+{
+	HPDF_Page_SetCMYKFill(page, c, m, y, k);
+	HPDF_Page_Fill(page);
+}
+
+void ofxLibharu::setCmykForeground(float c, float m, float y, float k)
+{
+	HPDF_Page_SetCMYKStroke(page, c, m, y, k);
+	HPDF_Page_Stroke(page);
+
+}
+
+void ofxLibharu::disableBackground()
+{
+	HPDF_Page_Eofill(page);
+}
+
+void ofxLibharu::disableForeground()
+{
+	HPDF_Page_EofillStroke(page);
+}
 
 /********** FUNCTIONS FOR OF BASE RENDERER *******************************/
 bool ofxLibharu::bClearBg() {
@@ -168,7 +197,7 @@ void ofxLibharu::background(int hexColor, float _a) {
 }
 
 void ofxLibharu::background(int r, int g, int b, int a) {
-
+	//bgColor.set(r, g, b, a);
 }
 
 void ofxLibharu::draw(ofFloatImage& image, float x, float y, float z, float w, float h, float sx, float sy, float sw, float sh) {
@@ -182,9 +211,16 @@ void ofxLibharu::draw(ofImage& image, float x, float y, float z, float w, float 
 }
 
 void ofxLibharu::draw(ofPath& shape) {
+	std::vector<ofPolyline>& polys = shape.getOutline();
+	for(std::vector<ofPolyline>::iterator it=polys.begin(); it<polys.end(); it++){
+		draw(*it);
+	}
 }
 
 void ofxLibharu::draw(ofPolyline& poly) {
+	for(unsigned int i=1;i<poly.size(); i++){
+		drawLine(poly[i-1].x, poly[i-1].y, poly[1-1].z, poly[i].x, poly[i].y, poly[i].z);
+	}
 }
 
 void ofxLibharu::draw(ofShortImage& image, float x, float y, float z, float w, float h, float sx, float sy, float sw, float sh) {
@@ -198,11 +234,13 @@ void ofxLibharu::draw(vector<ofPoint>& vertexData, ofPrimitiveMode drawMode) {
 void ofxLibharu::drawCircle(float x, float y, float z, float radius) {
 	x = convertX(x);
 	y = convertY(y);
+	HPDF_Page_Circle(page, x, y, convertDistance(radius));
 }
 
 void ofxLibharu::drawEllipse(float x, float y, float z, float width, float height) {
 	x = convertX(x);
 	y = convertY(y);
+	HPDF_Page_Ellipse(page, x, y, convertDistance(width), convertDistance(height));
 }
 
 void ofxLibharu::drawLine(float x1, float y1, float z1, float x2, float y2, float z2) {
@@ -218,6 +256,7 @@ void ofxLibharu::drawLine(float x1, float y1, float z1, float x2, float y2, floa
 void ofxLibharu::drawRectangle(float x, float y, float z, float w, float h) {
 	x = convertX(x);
 	y = convertY(y);
+	HPDF_Page_Rectangle(page, x, y, convertDistance(w), convertDistance(h));
 }
 
 void ofxLibharu::drawString(string text, float x, float y, float z, ofDrawBitmapMode mode) {
@@ -251,9 +290,11 @@ string ofxLibharu::getType() {
 }
 
 int ofxLibharu::getViewportHeight() {
+	return pageSize.y;
 }
 
 int ofxLibharu::getViewportWidth() {
+	return pageSize.x;
 }
 
 void ofxLibharu::loadIdentityMatrix(void) {
@@ -314,21 +355,45 @@ void ofxLibharu::setCircleResolution(int res) {
 }
 
 void ofxLibharu::setColor(const ofColor& color) {
+	setColor(color.r, color.g, color.b, color.a);
 }
 
-void ofxLibharu::setColor(const ofColor& color, int _a) {
+void ofxLibharu::setColor(const ofColor& color, int a) {
+	setColor(color.r, color.g, color.b, a);
 }
 
 void ofxLibharu::setColor(int gray) {
+	setColor(gray, gray, gray, 255);
 }
 
 void ofxLibharu::setColor(int r, int g, int b) {
+	setColor(r, g, b, 255);
 }
 
-void ofxLibharu::setColor(int r, int g, int b, int a) {
+void ofxLibharu::setColor(int _r, int _g, int _b, int _a) {
+	if(_a!= 255)
+		ofLogWarning() << "SORRY NO ALPHA YET" << endl;
+	float r = _r/255.f;
+	float g = _g/255.f;
+	float b = _b/255.f;
+	float black = std::min(1.f-r, 1-g);
+	black = std::min(black, 1.f-b);
+	
+	color.cyan = (1.f - r - black)/(1.f - black);
+	color.magenta = (1.f - g - black)/(1.f - black);
+	color.yellow = (1.f - b - black)/(1.f - black);
+	color.black = black;
 }
 
 void ofxLibharu::setFillMode(ofFillFlag fill) {
+	fillFlag = fill;
+	if(fillFlag == OF_OUTLINE){
+		disableBackground();
+		setCmykForeground(color.cyan, color.magenta, color.yellow, color.black);
+	}else{
+		disableForeground();
+		setCmykBackground(color.cyan, color.magenta, color.yellow, color.black);
+	}
 }
 
 void ofxLibharu::setHexColor(int hexColor) {
@@ -339,9 +404,11 @@ void ofxLibharu::setHexColor(int hexColor) {
 }
 
 void ofxLibharu::setLineSmoothing(bool smooth) {
+	bLineSmoothing = smooth;
 }
 
-void ofxLibharu::setLineWidth(float lineWidth) {
+void ofxLibharu::setLineWidth(float lw) {
+	lineWidth = lw;
 }
 
 void ofxLibharu::setRectMode(ofRectMode mode) {
@@ -375,4 +442,5 @@ void ofxLibharu::draw(ofMesh& vertexData, ofPolyRenderMode renderType, bool useC
 
 void ofxLibharu::update() {
 }
+
 

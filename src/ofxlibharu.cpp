@@ -8,11 +8,11 @@ void
 error_handler (HPDF_STATUS   error_no,
                HPDF_STATUS   detail_no,
                void         *user_data) {
-	printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
-	
+
 	ofxLibharuError libhErrors;
-	puts(ofToString(libhErrors.getErrorInfo(error_no)).c_str());
-	puts("--");
+	string error = libhErrors.getErrorInfo(error_no);
+	if(error!="") ofLogError() << libhErrors.getErrorInfo(error_no);
+	else printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
 	//check https://github.com/libharu/libharu/wiki/Error-handling#wiki-List_of_error_codes for error codes
 }
 
@@ -25,6 +25,8 @@ ofxLibharu::~ofxLibharu() {
 	HPDF_Free(pdf);
 }
 
+//Document Handling ------------------------------------------------------------------------------
+
 void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	pdf = HPDF_New (error_handler, NULL);
 	setCmykBackground(0, 0, 0, 1);
@@ -32,7 +34,33 @@ void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	newPage();
 	setOrientation(o);
 	setPageSize(size);
+
+	//font default values
+	setFont("Times-Roman");
+	setFontSize(16);
+	setTextAlignment(LEFT);
+	setCharSpacing(0);
+	setWordSpacing(0);
+	setTextLeading(0);
 }
+
+void ofxLibharu::save(string path, bool inDataFolder) {
+	if(inDataFolder)
+		path = ofToDataPath(path, true);
+	lastFileSaved = path;
+	HPDF_SaveToFile(pdf, path.c_str());
+}
+
+void ofxLibharu::openLastSave() {
+#ifdef TARGET_LINUX
+	string com = "xdg-open "+lastFileSaved;
+	system(com.c_str());
+#else
+	ofLogError() << "SORRY OPEN LAST SAVE IS ONLY IMPLEMENTED ON LINUX";
+#endif
+}
+
+//Page Handling ------------------------------------------------------------------------------
 
 bool hasDPI = false;
 
@@ -121,24 +149,27 @@ void ofxLibharu::newPage() {
 	page = HPDF_AddPage(pdf);
 }
 
-void ofxLibharu::save(string path, bool inDataFolder) {
-	if(inDataFolder)
-		path = ofToDataPath(path, true);
-	lastFileSaved = path;
-	HPDF_SaveToFile(pdf, path.c_str());
+void ofxLibharu::setCmykBackground(float c, float m, float y, float k) {
+	HPDF_Page_SetCMYKFill(page, c, m, y, k);
+	HPDF_Page_Fill(page);
 }
 
-void ofxLibharu::openLastSave()
-{
-	#ifdef TARGET_LINUX
-		string com = "xdg-open "+lastFileSaved;
-		system(com.c_str());
-	#else
-		ofLogError() << "SORRY OPEN LAST SAVE IS ONLY IMPLEMENTED ON LINUX";
-	#endif
+void ofxLibharu::setCmykForeground(float c, float m, float y, float k) {
+	HPDF_Page_SetCMYKStroke(page, c, m, y, k);
+	HPDF_Page_Stroke(page);
 }
 
-float ofxLibharu::convertDistance(float f){
+void ofxLibharu::disableBackground() {
+	HPDF_Page_Eofill(page);
+}
+
+void ofxLibharu::disableForeground() {
+	HPDF_Page_EofillStroke(page);
+}
+
+
+//Utilities ------------------------------------------------------------------------------
+float ofxLibharu::convertDistance(float f) {
 	return f * pixelRatio.x;
 }
 
@@ -150,28 +181,62 @@ float ofxLibharu::convertY(float y) {
 	return (pageSize.y - y) * pixelRatio.y;
 }
 
-void ofxLibharu::setCmykBackground(float c, float m, float y, float k)
-{
-	HPDF_Page_SetCMYKFill(page, c, m, y, k);
-	HPDF_Page_Fill(page);
+//Font Handling ---------------------------------------------------------------------------------
+void ofxLibharu::drawText(string text, float x, float y) {
+	HPDF_Page_BeginText(page);
+	HPDF_Page_MoveTextPos(page, convertX(x), convertY(y));
+	HPDF_Page_SetFontAndSize(page, font, fontSize);
+	HPDF_Page_SetWordSpace(page, wordSpace);
+	HPDF_Page_SetCharSpace(page, charSpace);
+	HPDF_Page_SetTextLeading(page, textLeading);
+	
+	HPDF_Page_ShowText (page,text.c_str());
+	HPDF_Page_EndText(page);
 }
 
-void ofxLibharu::setCmykForeground(float c, float m, float y, float k)
-{
-	HPDF_Page_SetCMYKStroke(page, c, m, y, k);
-	HPDF_Page_Stroke(page);
-
+void ofxLibharu::drawTextBox(string text, float x, float y, float width, float height) {
+	HPDF_Page_BeginText(page);
+	HPDF_Page_MoveTextPos(page, convertX(x), convertY(y));
+	HPDF_Page_SetFontAndSize(page, font, fontSize);
+	HPDF_Page_SetWordSpace(page, wordSpace);
+	HPDF_Page_SetCharSpace(page, charSpace);
+	HPDF_Page_SetTextLeading(page, textLeading);
+	
+	float right = convertX(x+width);
+	float bottom = convertY(y+height);
+	HPDF_Page_TextRect(page,convertX(x),convertY(y),right, bottom, text.c_str(),(_HPDF_TextAlignment)textAlignment, NULL);
+	HPDF_Page_EndText(page);
 }
 
-void ofxLibharu::disableBackground()
-{
-	HPDF_Page_Eofill(page);
+void ofxLibharu::setFont(string _fontName) {
+	fontName = _fontName;
+	font = HPDF_GetFont (pdf, fontName.c_str(), NULL);
 }
 
-void ofxLibharu::disableForeground()
-{
-	HPDF_Page_EofillStroke(page);
+void ofxLibharu::setFontSize(float size) {
+	fontSize = convertDistance(size);
 }
+
+void ofxLibharu::setTextAlignment(TEXT_ALIGNMENT _textAlignment) {
+	textAlignment = _textAlignment;
+}
+
+void ofxLibharu::setCharSpacing(float _charSpace) {
+	charSpace = convertDistance(_charSpace);
+}
+
+void ofxLibharu::setWordSpacing(float _wordSpace) {
+	wordSpace = convertDistance(_wordSpace);
+}
+
+void ofxLibharu::setTextLeading(float _textLeading) {
+	textLeading = convertDistance(_textLeading);
+}
+
+void ofxLibharu::resetTextLeading(){
+	setTextLeading(0);
+}
+
 
 /*
 void RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K)

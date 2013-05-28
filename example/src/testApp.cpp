@@ -4,17 +4,17 @@
 void testApp::setup(){
 	pdf.setup();
 	
-	pdf.enable();
+	//pdf.enable();
 	
-	ofFill();
+	//ofFill();
 	
-	ofLine(0, 0, 200, 200);
+	//ofLine(0, 0, 200, 200);
 	
-	ofRect(4, 4, 10, 10);
+	//ofRect(4, 4, 10, 10);
 	
-	pdf.disable();
+	//pdf.disable();
 
-	pdf.save("test.pdf");
+	pdf.save("test.pdf", true);
 	pdf.openLastSave();
 	
 	ofExit();

@@ -3,6 +3,7 @@
 
 #include "ofMain.h"
 #include "hpdf.h"
+#include "ofxlibharuErrors.h"
 
 class ofxLibharu: public ofBaseRenderer {
 public:
@@ -134,6 +135,7 @@ public:
 	void update();
 
 private:
+	
 	void updatePage();
 	ofVec2f pageSize;
 	ofVec2f pixelRatio;

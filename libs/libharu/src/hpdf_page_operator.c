@@ -1154,8 +1154,8 @@ HPDF_Page_SetFontAndSize  (HPDF_Page  page,
     if (!HPDF_Font_Validate (font))
         return HPDF_RaiseError (page->error, HPDF_PAGE_INVALID_FONT, 0);
 
-    if (size <= 0 || size > HPDF_MAX_FONTSIZE)
-        return HPDF_RaiseError (page->error, HPDF_PAGE_INVALID_FONT_SIZE, 0);
+   /* if (size <= 0 || size > HPDF_MAX_FONTSIZE)
+        return HPDF_RaiseError (page->error, HPDF_PAGE_INVALID_FONT_SIZE, 0);*/
 
     if (page->mmgr != font->mmgr)
         return HPDF_RaiseError (page->error, HPDF_PAGE_INVALID_FONT, 0);

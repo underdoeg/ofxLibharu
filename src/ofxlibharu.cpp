@@ -42,8 +42,8 @@ void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	setDefaultValues();
 }
 
-void ofxLibharu::setDefaultValues(){
-	
+void ofxLibharu::setDefaultValues() {
+
 	//font default values
 	setFont("Times-Roman");
 	setFontSize(16);
@@ -77,7 +77,9 @@ void ofxLibharu::openLastSave() {
 
 //Page Handling ------------------------------------------------------------------------------
 
-
+void ofxLibharu::resetStyles(){
+	setDefaultValues();
+}
 
 void ofxLibharu::updatePage() {
 	if(page) {
@@ -183,19 +185,35 @@ void ofxLibharu::disableForeground() {
 	HPDF_Page_EofillStroke(page);
 }
 
+ofVec2f ofxLibharu::getPageSize() {
+	return pageSize;
+}
+
 
 //Utilities ------------------------------------------------------------------------------
 
-float ofxLibharu::convertDistance(float f) {
+float ofxLibharu::convertDistance2Libh(float f) {
 	return f * pixelRatio.x;
 }
 
-float ofxLibharu::convertX(float x) {
+float ofxLibharu::convertX2Libh(float x) {
 	return x * pixelRatio.x;
 }
 
-float ofxLibharu::convertY(float y) {
+float ofxLibharu::convertY2Libh(float y) {
 	return (pageSize.y - y) * pixelRatio.y;
+}
+
+float ofxLibharu::convertDistance2OF(float f) {
+	return f*1/pixelRatio.x;
+}
+
+float ofxLibharu::convertX2OF(float x) {
+	return x*1/pixelRatio.x;
+}
+
+float ofxLibharu::convertY2OF(float y) {
+	return pageSize.y - y*1/pixelRatio.y;
 }
 
 
@@ -220,6 +238,101 @@ void ofxLibharu::RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K) 
 
 //Font Handling ---------------------------------------------------------------------------------
 
+float ofxLibharu::getTextWidth(string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing) {
+	float textWidth = getFontInfo(_text, _fontName, _fontSize, _charSpacing, _wordSpacing).textWidth;
+	return convertDistance2OF(textWidth);
+}
+
+float ofxLibharu::getTextWidth(string text){
+	float textWidth = HPDF_Page_TextWidth(page, text.c_str());
+	return convertDistance2OF(textWidth);
+}
+
+float ofxLibharu::getTextLeading() {
+	float leading = HPDF_Page_GetTextLeading(page);
+	leading*=fontSize*.001;
+	return convertDistance2OF(leading);
+}
+
+float ofxLibharu::getFontXHeight(string _fontName, float _fontSize) {
+	float xHeight = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).xHeight;
+	xHeight*=convertDistance2Libh(_fontSize)*.001;
+	return convertDistance2OF(xHeight);
+}
+
+float ofxLibharu::getFontXHeight(){
+	float xHeight = HPDF_Font_GetXHeight(font);
+	xHeight*=fontSize*.001;
+	return convertDistance2OF(xHeight);
+}
+
+float ofxLibharu::getFontAscent(string _fontName, float _fontSize) {
+	float ascent = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).ascent;
+	ascent*=convertDistance2Libh(_fontSize)*.001;
+	return convertDistance2OF(ascent);
+}
+
+float ofxLibharu::getFontAscent() {
+	float ascent = HPDF_Font_GetAscent(font);
+	ascent*=fontSize*.001;
+	return convertDistance2OF(ascent);
+}
+
+float ofxLibharu::getFontCapHeight(string _fontName, float _fontSize) {
+	float capHeight = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).capHeight;
+	capHeight*=convertDistance2Libh(_fontSize)*.001;
+	return convertDistance2OF(capHeight);
+}
+
+float ofxLibharu::getFontCapHeight() {
+	float capHeight = HPDF_Font_GetCapHeight(font);
+	capHeight*=fontSize*.001;
+	return convertDistance2OF(capHeight);
+}
+
+float ofxLibharu::getFontDescent(string _fontName, float _fontSize) {
+	float descent = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).descent;
+	descent*=convertDistance2Libh(_fontSize)*.001;
+	return convertDistance2OF(descent);
+}
+
+float ofxLibharu::getFontDescent() {
+	float descent = HPDF_Font_GetDescent(font);
+	descent*=fontSize*.001;
+	return convertDistance2OF(descent);
+}
+
+FontInfo ofxLibharu::getFontInfo(string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing){
+	
+	HPDF_Doc tmpPdf = HPDF_New (error_handler, NULL);
+	HPDF_Page tmpPage = HPDF_AddPage(tmpPdf);	
+	
+	HPDF_Font tmpFont;
+	if(ofIsStringInString(_text,".ttf")){
+		cout << _fontName << endl;
+		const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, _fontName.c_str(), HPDF_TRUE);
+		tmpFont = HPDF_GetFont(pdf, ttfFont, encoding.c_str());
+	}else{
+		tmpFont = HPDF_GetFont (tmpPdf, _fontName.c_str(), NULL);
+	}
+		
+	HPDF_Page_SetFontAndSize(tmpPage, tmpFont, convertDistance2Libh(_fontSize));
+	HPDF_Page_SetWordSpace(tmpPage, convertDistance2Libh(_wordSpacing));
+	HPDF_Page_SetCharSpace(tmpPage, convertDistance2Libh(_charSpacing));
+	
+	HPDF_Page_BeginText(tmpPage);
+	HPDF_Page_MoveTextPos(tmpPage, 0,0);
+
+	HPDF_Page_ShowText (tmpPage,_text.c_str());
+	HPDF_Page_EndText(tmpPage);
+	
+	FontInfo fInfo(HPDF_Font_GetAscent(tmpFont),HPDF_Font_GetCapHeight(tmpFont),HPDF_Font_GetDescent(tmpFont),HPDF_Font_GetXHeight(tmpFont),HPDF_Page_TextWidth(tmpPage, _text.c_str()));
+
+	HPDF_Free (tmpPdf);
+	
+	return fInfo;
+}
+
 void ofxLibharu::setFontSyles() {
 	setFillStyles();
 	HPDF_Page_SetFontAndSize(page, font, fontSize);
@@ -230,7 +343,7 @@ void ofxLibharu::setFontSyles() {
 
 void ofxLibharu::drawText(string text, float x, float y) {
 	HPDF_Page_BeginText(page);
-	HPDF_Page_MoveTextPos(page, convertX(x), convertY(y));
+	HPDF_Page_MoveTextPos(page, convertX2Libh(x), convertY2Libh(y));
 	setFontSyles();
 	HPDF_Page_ShowText (page,text.c_str());
 	HPDF_Page_EndText(page);
@@ -238,12 +351,12 @@ void ofxLibharu::drawText(string text, float x, float y) {
 
 void ofxLibharu::drawTextBox(string text, float x, float y, float width, float height) {
 	HPDF_Page_BeginText(page);
-	HPDF_Page_MoveTextPos(page, convertX(x), convertY(y));
+	HPDF_Page_MoveTextPos(page, convertX2Libh(x), convertY2Libh(y));
 	setFontSyles();
 
-	float right = convertX(x+width);
-	float bottom = convertY(y+height);
-	HPDF_Page_TextRect(page,convertX(x),convertY(y),right, bottom, text.c_str(),(_HPDF_TextAlignment)textAlignment, NULL);
+	float right = convertX2Libh(x+width);
+	float bottom = convertY2Libh(y+height);
+	HPDF_Page_TextRect(page,convertX2Libh(x),convertY2Libh(y),right, bottom, text.c_str(),(_HPDF_TextAlignment)textAlignment, NULL);
 	HPDF_Page_EndText(page);
 }
 
@@ -252,13 +365,14 @@ void ofxLibharu::setFont(string _fontName) {
 	font = HPDF_GetFont (pdf, fontName.c_str(), NULL);
 }
 
-void ofxLibharu::setTTFontFromFile(string filename){
+void ofxLibharu::setTTFontFromFile(string filename) {
 	const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, filename.c_str(), HPDF_TRUE);
 	font = HPDF_GetFont(pdf, ttfFont, encoding.c_str());
 }
 
 void ofxLibharu::setFontSize(float size) {
-	fontSize = convertDistance(size);
+	//max font size ??? remove: (HPDF_MAX_FONTSIZE hpdf_page_operator.c)
+	fontSize = convertDistance2Libh(size);
 }
 
 void ofxLibharu::setTextAlignment(TEXT_ALIGNMENT _textAlignment) {
@@ -267,15 +381,15 @@ void ofxLibharu::setTextAlignment(TEXT_ALIGNMENT _textAlignment) {
 }
 
 void ofxLibharu::setCharSpacing(float _charSpace) {
-	charSpace = convertDistance(_charSpace);
+	charSpace = convertDistance2Libh(_charSpace);
 }
 
 void ofxLibharu::setWordSpacing(float _wordSpace) {
-	wordSpace = convertDistance(_wordSpace);
+	wordSpace = convertDistance2Libh(_wordSpace);
 }
 
 void ofxLibharu::setTextLeading(float _textLeading) {
-	textLeading = convertDistance(_textLeading);
+	textLeading = convertDistance2Libh(_textLeading);
 }
 
 void ofxLibharu::resetTextLeading() {
@@ -302,26 +416,26 @@ void ofxLibharu::drawPathObject() {
 }
 
 void ofxLibharu::drawCircle(float x, float y, float radius) {
-	x = convertX(x);
-	y = convertY(y);
+	x = convertX2Libh(x);
+	y = convertY2Libh(y);
 	setGraphicStyles();
-	HPDF_Page_Circle(page, x, y, convertDistance(radius));
+	HPDF_Page_Circle(page, x, y, convertDistance2Libh(radius));
 	drawPathObject();
 }
 
 void ofxLibharu::drawEllipse(float x, float y, float width, float height) {
-	x = convertX(x);
-	y = convertY(y);
+	x = convertX2Libh(x);
+	y = convertY2Libh(y);
 	setGraphicStyles();
-	HPDF_Page_Ellipse(page, x, y, convertDistance(width), convertDistance(height));
+	HPDF_Page_Ellipse(page, x, y, convertDistance2Libh(width), convertDistance2Libh(height));
 	drawPathObject();
 }
 
 void ofxLibharu::drawLine(float x1, float y1, float x2, float y2) {
-	x1 = convertX(x1);
-	y1 = convertY(y1);
-	x2 = convertX(x2);
-	y2 = convertY(y2);
+	x1 = convertX2Libh(x1);
+	y1 = convertY2Libh(y1);
+	x2 = convertX2Libh(x2);
+	y2 = convertY2Libh(y2);
 	setGraphicStyles();
 
 	HPDF_Page_MoveTo(page, x1, y1);
@@ -330,13 +444,13 @@ void ofxLibharu::drawLine(float x1, float y1, float x2, float y2) {
 }
 
 /*void ofxLibharu::drawPolyLine(ofPolyline polyLine, bool close) {
-	
+
 }*/
 
 void ofxLibharu::drawRectangle(float x, float y, float width, float height) {
 
 	setGraphicStyles();
-	HPDF_Page_Rectangle(page, convertX(x), convertY(y), convertDistance(width), -convertDistance(height));
+	HPDF_Page_Rectangle(page, convertX2Libh(x), convertY2Libh(y), convertDistance2Libh(width), -convertDistance2Libh(height));
 	drawPathObject();
 }
 
@@ -367,7 +481,7 @@ void ofxLibharu::setStrokeColor(float c, float m, float y, float k) {
 }
 
 void ofxLibharu::setLineWidth(float _width) {
-	lineWidth = convertDistance(_width);
+	lineWidth = convertDistance2Libh(_width);
 }
 
 void ofxLibharu::setFillType(ofFillFlag _fillFlag) {

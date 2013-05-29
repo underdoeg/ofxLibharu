@@ -5,25 +5,21 @@
 #include "hpdf.h"
 #include "ofxlibharuErrors.h"
 
+class FontInfo {
+public:
+	FontInfo(float _ascent, float _capHeight, float _descent, float _xHeight, float _textWidth) {
+		ascent = _ascent;
+		capHeight = _capHeight;
+		descent = _descent;
+		xHeight = _xHeight;
+		textWidth = _textWidth;
+	}
+
+	float ascent, capHeight, descent, xHeight, textWidth;
+};
+
 class ofxLibharu {
 public:
-
-	class CMYK {
-	public:
-		CMYK() {
-			cyan = magenta = yellow = 0;
-			black = 1;
-		}
-
-		CMYK(float c, float m, float y, float k) {
-			cyan = c;
-			magenta = m;
-			yellow = y;
-			black = k;
-		}
-
-		float cyan, magenta, yellow, black;
-	};
 
 	enum PAGE_SIZE {
 	    A5,
@@ -74,7 +70,6 @@ public:
 	void setOrientation(ORIENTATION o);
 	void setDPI(int dpi);
 
-	void newPage();
 	void newPage(PAGE_SIZE size, ORIENTATION o = PORTRAIT);
 	void newPage(float w, float h);
 
@@ -83,6 +78,10 @@ public:
 
 	void disableBackground();
 	void disableForeground();
+
+	void resetStyles();
+
+	ofVec2f getPageSize();
 
 	//Graphics
 	void setFillColor(float r, float g, float b);
@@ -112,7 +111,19 @@ public:
 	void resetTextLeading();
 	void drawText(string text, float x, float y);
 	void drawTextBox(string text, float x, float y, float width, float height);
-	
+
+	float getTextWidth(string text, string font, float fontSize, float charSpacing, float wordSpacing);
+	float getTextWidth(string text);
+	float getTextLeading();
+	float getFontDescent(string font, float fontSize);
+	float getFontDescent();
+	float getFontAscent(string font, float fontSize);
+	float getFontAscent();
+	float getFontCapHeight(string font, float fontSize);
+	float getFontCapHeight();
+	float getFontXHeight(string font, float fontSize);
+	float getFontXHeight();
+
 
 private:
 
@@ -125,19 +136,24 @@ private:
 	string encoding;
 
 	//Page Handling
+	void newPage();
 	void updatePage();
 	void setDefaultValues();
 	ofVec2f pageSize;
-	
+
 	HPDF_Page page;
 
 	string lastFileSaved;
 
 	//Utitilies
-	float convertX(float x);
-	float convertY(float y);
-	float convertDistance(float f);
+	float convertX2Libh(float x);
+	float convertY2Libh(float y);
+	float convertDistance2Libh(float f);
+	float convertX2OF(float x);
+	float convertY2OF(float y);
+	float convertDistance2OF(float f);
 	void RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K);
+
 
 	//Graphics
 	void setFillStyles();
@@ -158,10 +174,9 @@ private:
 	float textLeading;
 	string fontName;
 	TEXT_ALIGNMENT textAlignment;
-
 	HPDF_Font font;
-	
-	
+
+	FontInfo getFontInfo(string text, string font, float fontSize, float charSpacing, float wordSpacing);
 
 };
 

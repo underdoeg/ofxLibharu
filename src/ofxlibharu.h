@@ -160,7 +160,8 @@ private:
 	TEXT_ALIGNMENT textAlignment;
 
 	HPDF_Font font;
-
+	
+	
 
 };
 

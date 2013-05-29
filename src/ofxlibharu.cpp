@@ -77,7 +77,7 @@ void ofxLibharu::openLastSave() {
 
 //Page Handling ------------------------------------------------------------------------------
 
-bool hasDPI = false;
+
 
 void ofxLibharu::updatePage() {
 	if(page) {
@@ -161,6 +161,7 @@ void ofxLibharu::newPage(float w, float h) {
 }
 
 void ofxLibharu::newPage() {
+	hasDPI = false;
 	page = HPDF_AddPage(pdf);
 }
 

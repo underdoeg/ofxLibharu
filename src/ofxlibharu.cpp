@@ -29,12 +29,21 @@ ofxLibharu::~ofxLibharu() {
 
 void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	pdf = HPDF_New (error_handler, NULL);
+	HPDF_SetCompressionMode(pdf,HPDF_COMP_NONE);
+	HPDF_UseUTFEncodings(pdf);
+	encoding = "UTF-8";
+	HPDF_SetCurrentEncoder(pdf, encoding.c_str());
+
 	setCmykBackground(0, 0, 0, 1);
 	setCmykForeground(0, 0, 0, 1);
 	newPage();
 	setOrientation(o);
 	setPageSize(size);
+	setDefaultValues();
+}
 
+void ofxLibharu::setDefaultValues(){
+	
 	//font default values
 	setFont("Times-Roman");
 	setFontSize(16);
@@ -147,8 +156,8 @@ void ofxLibharu::newPage(PAGE_SIZE size, ORIENTATION o) {
 	setOrientation(o);
 }
 void ofxLibharu::newPage(float w, float h) {
-	setPageSize(w, h);
 	newPage();
+	setPageSize(w, h);
 }
 
 void ofxLibharu::newPage() {
@@ -240,6 +249,11 @@ void ofxLibharu::drawTextBox(string text, float x, float y, float width, float h
 void ofxLibharu::setFont(string _fontName) {
 	fontName = _fontName;
 	font = HPDF_GetFont (pdf, fontName.c_str(), NULL);
+}
+
+void ofxLibharu::setTTFontFromFile(string filename){
+	const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, filename.c_str(), HPDF_TRUE);
+	font = HPDF_GetFont(pdf, ttfFont, encoding.c_str());
 }
 
 void ofxLibharu::setFontSize(float size) {

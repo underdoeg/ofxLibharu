@@ -103,6 +103,7 @@ public:
 
 	//Font Handling
 	void setFont(string fontName);
+	void setTTFontFromFile(string filename);
 	void setFontSize(float size);
 	void setTextAlignment(TEXT_ALIGNMENT textAlignment);
 	void setCharSpacing(float charSpace);
@@ -121,10 +122,13 @@ private:
 	HPDF_Doc  pdf;
 	float dpi;
 	bool hasDPI;
+	string encoding;
 
 	//Page Handling
 	void updatePage();
+	void setDefaultValues();
 	ofVec2f pageSize;
+	
 	HPDF_Page page;
 
 	string lastFileSaved;
@@ -139,10 +143,7 @@ private:
 	void setFillStyles();
 	void setGraphicStyles();
 	void drawPathObject();
-	bool bLineSmoothing;
 	float lineWidth;
-	bool doFill;
-	bool doStroke;
 	_HPDF_CMYKColor fillColor;
 	_HPDF_CMYKColor strokeColor;
 	ofFillFlag fillFlag;

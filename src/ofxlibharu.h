@@ -7,15 +7,14 @@
 
 class FontInfo {
 public:
-	FontInfo(float _ascent, float _capHeight, float _descent, float _xHeight, float _textWidth) {
+	FontInfo(float _ascent, float _capHeight, float _descent, float _xHeight) {
 		ascent = _ascent;
 		capHeight = _capHeight;
 		descent = _descent;
 		xHeight = _xHeight;
-		textWidth = _textWidth;
 	}
 
-	float ascent, capHeight, descent, xHeight, textWidth;
+	float ascent, capHeight, descent, xHeight;
 };
 
 class ofxLibharu {
@@ -176,7 +175,7 @@ private:
 	TEXT_ALIGNMENT textAlignment;
 	HPDF_Font font;
 
-	FontInfo getFontInfo(string text, string font, float fontSize, float charSpacing, float wordSpacing);
+	FontInfo getFontInfo(string fontName);
 
 };
 

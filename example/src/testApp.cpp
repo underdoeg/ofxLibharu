@@ -5,9 +5,9 @@ void testApp::setup(){
 	pdf.setup(ofxLibharu::A4, ofxLibharu::LANDSCAPE);
 	
 	string text = "Kpfx";
-	float fontsize = 50;
-	string fontName = "Helvetica";
-	//fontName = ofToDataPath("DejaVuSansMono.ttf");
+	float fontsize = 30;
+	//string fontName = "Helvetica";
+	string fontName = ofToDataPath("SimLt___D.ttf");
 	float charSpacing = 3;
 	float wordSpacing = 3;
 	
@@ -17,8 +17,8 @@ void testApp::setup(){
 	float capital = pdf.getFontCapHeight(fontName,fontsize);
 	float xheight = pdf.getFontXHeight(fontName,fontsize);
 	
-	pdf.setFont(fontName);
-	//pdf.setTTFontFromFile(fontName);
+	//pdf.setFont(fontName);
+	pdf.setTTFontFromFile(fontName);
 	//pdf.setTTFontFromFile(ofToDataPath("DejaVuSansMono.ttf"));
 	
 	pdf.setDPI(50);
@@ -33,6 +33,14 @@ void testApp::setup(){
 	pdf.setWordSpacing(wordSpacing);
 	
 	pdf.drawText(text, fx,fy);
+	
+	/*float width = pdf.getTextWidth(text);
+	float descent = pdf.getFontDescent();
+	float ascent = pdf.getFontAscent();
+	float capital = pdf.getFontCapHeight();
+	float xheight = pdf.getFontXHeight();*/
+	
+	cout << pdf.getTextWidth(text) << endl;
 	
 
 	pdf.setFillType(OF_OUTLINE);

@@ -77,7 +77,7 @@ void ofxLibharu::openLastSave() {
 
 //Page Handling ------------------------------------------------------------------------------
 
-void ofxLibharu::resetStyles(){
+void ofxLibharu::resetStyles() {
 	setDefaultValues();
 }
 
@@ -239,11 +239,43 @@ void ofxLibharu::RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K) 
 //Font Handling ---------------------------------------------------------------------------------
 
 float ofxLibharu::getTextWidth(string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing) {
-	float textWidth = getFontInfo(_text, _fontName, _fontSize, _charSpacing, _wordSpacing).textWidth;
+
+	float textWidth;
+	
+	HPDF_Doc tmpPdf = HPDF_New (error_handler, NULL);
+	HPDF_UseUTFEncodings(tmpPdf);
+	HPDF_SetCurrentEncoder(pdf, encoding.c_str());
+	
+	HPDF_Page tmpPage = HPDF_AddPage(tmpPdf);
+	HPDF_Page_SetSize(tmpPage, HPDF_PAGE_SIZE_A4, HPDF_PAGE_PORTRAIT);
+	HPDF_Page_Concat (tmpPage, 72.0f / dpi, 0, 0, 72.0f / dpi, 0, 0);
+
+	HPDF_Font tmpFont;
+	if(ofIsStringInString(_fontName,".ttf")) {
+		const char *ttfFont = HPDF_LoadTTFontFromFile(tmpPdf, _fontName.c_str(), HPDF_TRUE);
+		tmpFont = HPDF_GetFont(tmpPdf, ttfFont, encoding.c_str());
+	} else {
+		tmpFont = HPDF_GetFont (tmpPdf, _fontName.c_str(), NULL);
+	}
+	
+	HPDF_Page_SetFontAndSize(tmpPage, tmpFont, convertDistance2Libh(_fontSize));
+	HPDF_Page_SetWordSpace(tmpPage, convertDistance2Libh(_wordSpacing));
+	HPDF_Page_SetCharSpace(tmpPage, convertDistance2Libh(_charSpacing));
+
+	HPDF_Page_BeginText(tmpPage);
+	HPDF_Page_MoveTextPos(tmpPage, 0,0);
+
+	HPDF_Page_ShowText (tmpPage,_text.c_str());
+	HPDF_Page_EndText(tmpPage);
+	
+	textWidth = HPDF_Page_TextWidth(tmpPage, _text.c_str());
+
+	HPDF_Free (tmpPdf);
+
 	return convertDistance2OF(textWidth);
 }
 
-float ofxLibharu::getTextWidth(string text){
+float ofxLibharu::getTextWidth(string text) {
 	float textWidth = HPDF_Page_TextWidth(page, text.c_str());
 	return convertDistance2OF(textWidth);
 }
@@ -255,19 +287,19 @@ float ofxLibharu::getTextLeading() {
 }
 
 float ofxLibharu::getFontXHeight(string _fontName, float _fontSize) {
-	float xHeight = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).xHeight;
+	float xHeight = getFontInfo(_fontName).xHeight;
 	xHeight*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(xHeight);
 }
 
-float ofxLibharu::getFontXHeight(){
+float ofxLibharu::getFontXHeight() {
 	float xHeight = HPDF_Font_GetXHeight(font);
 	xHeight*=fontSize*.001;
 	return convertDistance2OF(xHeight);
 }
 
 float ofxLibharu::getFontAscent(string _fontName, float _fontSize) {
-	float ascent = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).ascent;
+	float ascent = getFontInfo(_fontName).ascent;
 	ascent*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(ascent);
 }
@@ -279,7 +311,7 @@ float ofxLibharu::getFontAscent() {
 }
 
 float ofxLibharu::getFontCapHeight(string _fontName, float _fontSize) {
-	float capHeight = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).capHeight;
+	float capHeight = getFontInfo(_fontName).capHeight;
 	capHeight*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(capHeight);
 }
@@ -291,7 +323,7 @@ float ofxLibharu::getFontCapHeight() {
 }
 
 float ofxLibharu::getFontDescent(string _fontName, float _fontSize) {
-	float descent = getFontInfo("Kpfx", _fontName, _fontSize, 0, 0).descent;
+	float descent = getFontInfo(_fontName).descent;
 	descent*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(descent);
 }
@@ -302,33 +334,17 @@ float ofxLibharu::getFontDescent() {
 	return convertDistance2OF(descent);
 }
 
-FontInfo ofxLibharu::getFontInfo(string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing){
-	
-	HPDF_Doc tmpPdf = HPDF_New (error_handler, NULL);
-	HPDF_Page tmpPage = HPDF_AddPage(tmpPdf);	
+FontInfo ofxLibharu::getFontInfo(string _fontName) {
 	
 	HPDF_Font tmpFont;
-	if(ofIsStringInString(_text,".ttf")){
-		cout << _fontName << endl;
+	if(ofIsStringInString(_fontName,".ttf")) {
 		const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, _fontName.c_str(), HPDF_TRUE);
 		tmpFont = HPDF_GetFont(pdf, ttfFont, encoding.c_str());
-	}else{
-		tmpFont = HPDF_GetFont (tmpPdf, _fontName.c_str(), NULL);
+	} else {
+		tmpFont = HPDF_GetFont (pdf, _fontName.c_str(), NULL);
 	}
-		
-	HPDF_Page_SetFontAndSize(tmpPage, tmpFont, convertDistance2Libh(_fontSize));
-	HPDF_Page_SetWordSpace(tmpPage, convertDistance2Libh(_wordSpacing));
-	HPDF_Page_SetCharSpace(tmpPage, convertDistance2Libh(_charSpacing));
-	
-	HPDF_Page_BeginText(tmpPage);
-	HPDF_Page_MoveTextPos(tmpPage, 0,0);
 
-	HPDF_Page_ShowText (tmpPage,_text.c_str());
-	HPDF_Page_EndText(tmpPage);
-	
-	FontInfo fInfo(HPDF_Font_GetAscent(tmpFont),HPDF_Font_GetCapHeight(tmpFont),HPDF_Font_GetDescent(tmpFont),HPDF_Font_GetXHeight(tmpFont),HPDF_Page_TextWidth(tmpPage, _text.c_str()));
-
-	HPDF_Free (tmpPdf);
+	FontInfo fInfo(HPDF_Font_GetAscent(tmpFont),HPDF_Font_GetCapHeight(tmpFont),HPDF_Font_GetDescent(tmpFont),HPDF_Font_GetXHeight(tmpFont));
 	
 	return fInfo;
 }

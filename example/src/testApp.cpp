@@ -4,12 +4,15 @@
 void testApp::setup(){
 	pdf.setup(ofxLibharu::A4, ofxLibharu::LANDSCAPE);
 	
-	string text = "Kpfx";
-	float fontsize = 30;
+	string text = "Kpfxz";
+	float fontsize = 40;
+	float textleading = 45;
 	//string fontName = "Helvetica";
+	//string fontName = ofToDataPath("DejaVuSansMono.ttf");
+	//string fontName = ofToDataPath("TSTARMonRouBol.ttf");
 	string fontName = ofToDataPath("SimLt___D.ttf");
-	float charSpacing = 3;
-	float wordSpacing = 3;
+	float charSpacing = 1;
+	float wordSpacing = 1;
 	
 	float width = pdf.getTextWidth(text,fontName,fontsize,charSpacing,wordSpacing);
 	float descent = pdf.getFontDescent(fontName,fontsize);
@@ -19,16 +22,13 @@ void testApp::setup(){
 	
 	//pdf.setFont(fontName);
 	pdf.setTTFontFromFile(fontName);
-	//pdf.setTTFontFromFile(ofToDataPath("DejaVuSansMono.ttf"));
 	
-	pdf.setDPI(50);
 	float fx = 20;
-	float fy = pdf.getPageSize().y*.5;
+	float fy = fontsize+10;
 	
-
 	pdf.setFillColor(0,0,0);
-	pdf.setFontSize(fontsize); //<<< max font size ??? (HPDF_MAX_FONTSIZE hpdf_page_operator.c)
-	pdf.setTextLeading(fontsize);
+	pdf.setFontSize(fontsize);
+	pdf.setTextLeading(textleading);
 	pdf.setCharSpacing(charSpacing);
 	pdf.setWordSpacing(wordSpacing);
 	
@@ -39,9 +39,6 @@ void testApp::setup(){
 	float ascent = pdf.getFontAscent();
 	float capital = pdf.getFontCapHeight();
 	float xheight = pdf.getFontXHeight();*/
-	
-	cout << pdf.getTextWidth(text) << endl;
-	
 
 	pdf.setFillType(OF_OUTLINE);
 	pdf.setLineWidth(.1);
@@ -58,28 +55,36 @@ void testApp::setup(){
 
 
 	//new page
-	pdf.newPage(ofxLibharu::A4, ofxLibharu::LANDSCAPE);
-	pdf.resetStyles();
+	//pdf.newPage(ofxLibharu::A4, ofxLibharu::LANDSCAPE);
+	//pdf.resetStyles();
 	
-	pdf.setTextAlignment(ofxLibharu::ALIGN_RIGHT);
-	pdf.setFontSize(5);
-	//pdf.setCharSpacing(2); //<-- issues with align right and bounding box
-	//pdf.setWordSpacing(3); //<-- issues with align right and bounding box
-	pdf.setTextLeading(3);
-	pdf.setFillColor(255,0,0);
+	//pdf.setTextAlignment(ofxLibharu::ALIGN_RIGHT);
+	
+	
+	fontsize = 3;
+	textleading = 4;
+	
+	pdf.setFontSize(fontsize);
+	pdf.setTextLeading(textleading);
+	pdf.setFillColor(0,0,0);
 	text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
-	pdf.drawTextBox(text, 20,40,100,100);
 	
-	pdf.setStrokeColor(0,0,0);
-	pdf.setLineWidth(.2);
-	pdf.setFillType(OF_OUTLINE);
-	pdf.drawRectangle(20,40,100,100);
+	float tbx=20,tby=100;
+	float tbWidth = 100;
+	float tbHeight = pdf.getTextBoxHeight(tbWidth,text,fontName,fontsize,textleading,charSpacing,wordSpacing);
 	
-	pdf.setLineWidth(3);
-	pdf.setLineCapStyle(ofxLibharu::LINE_CAP_ROUND);
+	cout << pdf.measureTextBox(tbWidth,tbHeight,text,fontName,fontsize,textleading,charSpacing,wordSpacing) << endl;
+	pdf.drawTextBox(text, tbx,tby,tbWidth,tbHeight);
+	
 	pdf.setStrokeColor(255,0,0);
-	pdf.drawLine(10,10,200,200);
+	pdf.setLineWidth(.1);
+	pdf.setFillType(OF_OUTLINE);
+	pdf.drawRectangle(tbx,tby,tbWidth,tbHeight);
 	
+	pdf.setLineWidth(.1);
+	for(float y=fontsize; y<=tbHeight; y+=textleading){
+		pdf.drawLine(tbx,tby+y,tbx+tbWidth,tby+y);
+	}
 	
 	pdf.save("test.pdf", true);
 	pdf.openLastSave();

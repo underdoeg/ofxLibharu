@@ -2488,8 +2488,9 @@ HPDF_Page_TextRect  (HPDF_Page            page,
         HPDF_REAL rw;
         HPDF_BOOL LineBreak;
 
-        attr->gstate->char_space = 0;
+        if (align == HPDF_TALIGN_JUSTIFY) attr->gstate->char_space = 0;
         line_len = tmp_len = HPDF_Page_MeasureText (page, ptr, right - left, HPDF_TRUE, &rw);
+		
         if (line_len == 0) {
             is_insufficient_space = HPDF_TRUE;
             break;

@@ -114,6 +114,8 @@ public:
 	float getTextWidth(string text, string font, float fontSize, float charSpacing, float wordSpacing);
 	float getTextWidth(string text);
 	float getTextLeading();
+	
+	//ofRectangle getFontBoundingBox(string font);
 	float getFontDescent(string font, float fontSize);
 	float getFontDescent();
 	float getFontAscent(string font, float fontSize);
@@ -122,6 +124,12 @@ public:
 	float getFontCapHeight();
 	float getFontXHeight(string font, float fontSize);
 	float getFontXHeight();
+	
+	int measureText(float width, string text, string fontName, float fontSize, float charSpacing, float wordSpacing);
+	string measureTextBox(float width, float height, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
+	float getTextBoxHeight(float width, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
+
+
 
 
 private:
@@ -133,6 +141,10 @@ private:
 	float dpi;
 	bool hasDPI;
 	string encoding;
+	
+	HPDF_Doc tmpPdf;
+	HPDF_Page tmpPage;
+	void createTmpPage();
 
 	//Page Handling
 	void newPage();
@@ -153,7 +165,6 @@ private:
 	float convertDistance2OF(float f);
 	void RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K);
 
-
 	//Graphics
 	void setFillStyles();
 	void setGraphicStyles();
@@ -166,6 +177,8 @@ private:
 	LINE_JOIN lineJoin;
 
 	//Font Handling
+	FontInfo getFontInfo(string fontName);
+	HPDF_Font getTmpFont(string fontName);
 	void setFontSyles();
 	float fontSize;
 	float charSpace;
@@ -174,8 +187,6 @@ private:
 	string fontName;
 	TEXT_ALIGNMENT textAlignment;
 	HPDF_Font font;
-
-	FontInfo getFontInfo(string fontName);
 
 };
 

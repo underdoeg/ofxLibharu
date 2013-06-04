@@ -1,4 +1,4 @@
-#include "ofxlibharu.h"
+#include "ofxLibharu.h"
 
 #ifdef HPDF_DLL
 void  __stdcall
@@ -271,9 +271,9 @@ int ofxLibharu::measureText(float _width, string _text, string _fontName, float 
 	float defWordSpacing = convertDistance2Libh(_wordSpacing);
 
 	HPDF_UINT len = strlen(_text.c_str());
-	int charCount = HPDF_Font_MeasureText(getTmpFont(_fontName), (HPDF_BYTE *)_text.c_str(), len, defWidth, defFontSize, defCharSpacing, defWordSpacing, HPDF_TRUE, NULL);
+	int tmpCharCount = HPDF_Font_MeasureText(getTmpFont(_fontName), (HPDF_BYTE *)_text.c_str(), len, defWidth, defFontSize, defCharSpacing, defWordSpacing, HPDF_TRUE, NULL);
 
-	return charCount;
+	return tmpCharCount;
 }
 
 float ofxLibharu::getTextBoxHeight(float _width, string _text, string _fontName, float _fontSize, float _textLeading, float _charSpacing, float _wordSpacing) {
@@ -289,37 +289,38 @@ float ofxLibharu::getTextBoxHeight(float _width, string _text, string _fontName,
 
 	float height = lineCount*_textLeading;
 	height+=_fontSize;
+	height-= _textLeading;
 	height+=getFontDescent(_fontName,_fontSize)*-1;
 	return height;
 }
 
-string ofxLibharu::measureTextBox(float _width, float _height, string _text, string _fontName, float _fontSize, float _textLeading, float _charSpacing, float _wordSpacing) {
-
-	// not yet implemented
+int ofxLibharu::measureTextBox(float _width, float _height, string _text, string _fontName, float _fontSize, float _textLeading, float _charSpacing, float _wordSpacing) {
+	
 	string fillText = _text;
-	float countHeight=0;
+	float countHeight=_fontSize+getFontDescent(_fontName,_fontSize)*-1;
 
 	int charCount = 0;
 	int curChar = 0;
 
 	while(countHeight<_height) {
-
-
 		charCount = measureText(_width,fillText,_fontName,_fontSize,_charSpacing,_wordSpacing);
-		if(_text.size()<curChar+charCount) return "ende";
-		string tmpText = _text.substr(curChar,charCount);
-
-		cout << "--------" << endl;
-		cout << curChar << " " << charCount << endl;
-		cout << "--------" << endl;
-		cout << tmpText << endl;
-
-		curChar += charCount;
+		fillText.erase(0,charCount);
 		countHeight+=_textLeading;
-
 	}
+		
+	return fillText.size();
+}
 
-	return "ende";
+void ofxLibharu::drawTextBox(string text, float x, float y, float width, float height) {
+	
+	//float maxHeight = height-getFontDescent(fontName,convertDistance2OF(fontSize))*-1;
+	for(float ypos=convertDistance2OF(fontSize); ypos<=height; ypos+=convertDistance2OF(textLeading)){
+		int charCount = measureText(width,text,fontName,convertDistance2OF(fontSize),convertDistance2OF(charSpace),convertDistance2OF(wordSpace));
+		string defText = text.substr(0,charCount);
+		cout << defText << endl;
+		text.erase(0,charCount);
+		drawText(defText,x,y+ypos);
+	}
 }
 
 float ofxLibharu::getTextWidth(string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing) {
@@ -343,27 +344,10 @@ float ofxLibharu::getTextLeading() {
 	return convertDistance2OF(leading);
 }
 
-FontInfo ofxLibharu::getFontInfo(string _fontName) {
-
+float ofxLibharu::getFontXHeight(string _fontName, float _fontSize) {
 	HPDF_Font tmpFont = getTmpFont(_fontName);
 
-	FontInfo fInfo(HPDF_Font_GetAscent(tmpFont),HPDF_Font_GetCapHeight(tmpFont),HPDF_Font_GetDescent(tmpFont),HPDF_Font_GetXHeight(tmpFont));
-
-	return fInfo;
-}
-
-/*ofRectangle ofxLibharu::getFontBoundingBox(string _fontName){
-	HPDF_Rect bbox = getFontInfo(_fontName).boundingBox;
-
-	float bboxW = convertX2OF(bbox.right-bbox.left);
-	float bboxH = convertY2OF(bbox.top-bbox.bottom);
-	ofRectangle ofBbox(convertX2OF(bbox.left),convertY2OF(bbox.bottom),bboxW,bboxH);
-
-	return ofBbox;
-}*/
-
-float ofxLibharu::getFontXHeight(string _fontName, float _fontSize) {
-	float xHeight = getFontInfo(_fontName).xHeight;
+	float xHeight = HPDF_Font_GetXHeight(tmpFont);
 	xHeight*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(xHeight);
 }
@@ -375,7 +359,9 @@ float ofxLibharu::getFontXHeight() {
 }
 
 float ofxLibharu::getFontAscent(string _fontName, float _fontSize) {
-	float ascent = getFontInfo(_fontName).ascent;
+	HPDF_Font tmpFont = getTmpFont(_fontName);
+
+	float ascent = HPDF_Font_GetAscent(tmpFont);
 	ascent*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(ascent);
 }
@@ -387,7 +373,9 @@ float ofxLibharu::getFontAscent() {
 }
 
 float ofxLibharu::getFontCapHeight(string _fontName, float _fontSize) {
-	float capHeight = getFontInfo(_fontName).capHeight;
+	HPDF_Font tmpFont = getTmpFont(_fontName);
+
+	float capHeight = HPDF_Font_GetCapHeight(tmpFont);
 	capHeight*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(capHeight);
 }
@@ -399,7 +387,9 @@ float ofxLibharu::getFontCapHeight() {
 }
 
 float ofxLibharu::getFontDescent(string _fontName, float _fontSize) {
-	float descent = getFontInfo(_fontName).descent;
+	HPDF_Font tmpFont = getTmpFont(_fontName);
+
+	float descent = HPDF_Font_GetDescent(tmpFont);
 	descent*=convertDistance2Libh(_fontSize)*.001;
 	return convertDistance2OF(descent);
 }
@@ -426,21 +416,6 @@ void ofxLibharu::drawText(string text, float x, float y) {
 	HPDF_Page_EndText(page);
 }
 
-void ofxLibharu::drawTextBox(string text, float x, float y, float width, float height) {
-
-	// -> Fixed Issues with text alignment in combination with char and word spacing
-	// changed: hpdf_page_operator.c line 2491: if (align == HPDF_TALIGN_JUSTIFY) attr->gstate->char_space = 0;
-	// -> Still Issues with ttfonts align-right and justify
-	HPDF_Page_BeginText(page);
-	HPDF_Page_MoveTextPos(page, convertX2Libh(x), convertY2Libh(y));
-	setFontSyles();
-
-	float right = convertX2Libh(x+width);
-	float bottom = convertY2Libh(y+height);
-	HPDF_Page_TextRect(page,convertX2Libh(x),convertY2Libh(y),right, bottom, text.c_str(),(_HPDF_TextAlignment)textAlignment, NULL);
-	HPDF_Page_EndText(page);
-}
-
 void ofxLibharu::setFont(string _fontName) {
 	fontName = _fontName;
 	font = HPDF_GetFont (pdf, fontName.c_str(), NULL);
@@ -448,6 +423,7 @@ void ofxLibharu::setFont(string _fontName) {
 
 void ofxLibharu::setTTFontFromFile(string filename) {
 	const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, filename.c_str(), HPDF_TRUE);
+	fontName = filename;
 	font = HPDF_GetFont(pdf, ttfFont, encoding.c_str());
 }
 

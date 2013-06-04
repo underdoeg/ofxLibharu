@@ -7,11 +7,11 @@ void testApp::setup(){
 	string text = "Kpfxz";
 	float fontsize = 40;
 	float textleading = 45;
-	//string fontName = "Helvetica";
+	//string fontName = "Times-Roman";
 	//string fontName = ofToDataPath("DejaVuSansMono.ttf");
 	//string fontName = ofToDataPath("TSTARMonRouBol.ttf");
 	string fontName = ofToDataPath("SimLt___D.ttf");
-	float charSpacing = 1;
+	float charSpacing = 2;
 	float wordSpacing = 1;
 	
 	float width = pdf.getTextWidth(text,fontName,fontsize,charSpacing,wordSpacing);
@@ -53,16 +53,13 @@ void testApp::setup(){
 	
 	pdf.drawText(text, fx,fy);
 
-
-	//new page
 	//pdf.newPage(ofxLibharu::A4, ofxLibharu::LANDSCAPE);
 	//pdf.resetStyles();
 	
 	//pdf.setTextAlignment(ofxLibharu::ALIGN_RIGHT);
 	
-	
 	fontsize = 3;
-	textleading = 4;
+	textleading = 3.2;
 	
 	pdf.setFontSize(fontsize);
 	pdf.setTextLeading(textleading);
@@ -70,11 +67,10 @@ void testApp::setup(){
 	text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 	
 	float tbx=20,tby=100;
-	float tbWidth = 100;
+	float tbWidth = 150;
 	float tbHeight = pdf.getTextBoxHeight(tbWidth,text,fontName,fontsize,textleading,charSpacing,wordSpacing);
 	
 	cout << pdf.measureTextBox(tbWidth,tbHeight,text,fontName,fontsize,textleading,charSpacing,wordSpacing) << endl;
-	pdf.drawTextBox(text, tbx,tby,tbWidth,tbHeight);
 	
 	pdf.setStrokeColor(255,0,0);
 	pdf.setLineWidth(.1);
@@ -85,6 +81,8 @@ void testApp::setup(){
 	for(float y=fontsize; y<=tbHeight; y+=textleading){
 		pdf.drawLine(tbx,tby+y,tbx+tbWidth,tby+y);
 	}
+	
+	pdf.drawTextBox(text, tbx,tby,tbWidth,tbHeight);
 	
 	pdf.save("test.pdf", true);
 	pdf.openLastSave();

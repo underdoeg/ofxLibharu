@@ -3,19 +3,7 @@
 
 #include "ofMain.h"
 #include "hpdf.h"
-#include "ofxlibharuErrors.h"
-
-class FontInfo {
-public:
-	FontInfo(float _ascent, float _capHeight, float _descent, float _xHeight) {
-		ascent = _ascent;
-		capHeight = _capHeight;
-		descent = _descent;
-		xHeight = _xHeight;
-	}
-
-	float ascent, capHeight, descent, xHeight;
-};
+#include "ofxLibharuErrors.h"
 
 class ofxLibharu {
 public:
@@ -114,8 +102,7 @@ public:
 	float getTextWidth(string text, string font, float fontSize, float charSpacing, float wordSpacing);
 	float getTextWidth(string text);
 	float getTextLeading();
-	
-	//ofRectangle getFontBoundingBox(string font);
+
 	float getFontDescent(string font, float fontSize);
 	float getFontDescent();
 	float getFontAscent(string font, float fontSize);
@@ -124,12 +111,10 @@ public:
 	float getFontCapHeight();
 	float getFontXHeight(string font, float fontSize);
 	float getFontXHeight();
-	
+
 	int measureText(float width, string text, string fontName, float fontSize, float charSpacing, float wordSpacing);
-	string measureTextBox(float width, float height, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
+	int measureTextBox(float width, float height, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
 	float getTextBoxHeight(float width, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
-
-
 
 
 private:
@@ -141,7 +126,7 @@ private:
 	float dpi;
 	bool hasDPI;
 	string encoding;
-	
+
 	HPDF_Doc tmpPdf;
 	HPDF_Page tmpPage;
 	void createTmpPage();
@@ -177,7 +162,6 @@ private:
 	LINE_JOIN lineJoin;
 
 	//Font Handling
-	FontInfo getFontInfo(string fontName);
 	HPDF_Font getTmpFont(string fontName);
 	void setFontSyles();
 	float fontSize;

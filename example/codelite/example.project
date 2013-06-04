@@ -106,9 +106,9 @@
       </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="src">
-      <File Name="../../src/ofxlibharu.h"/>
-      <File Name="../../src/ofxlibharu.cpp"/>
-      <File Name="../../src/ofxlibharuErrors.h"/>
+      <File Name="../../src/ofxLibharuErrors.h"/>
+      <File Name="../../src/ofxLibharu.h"/>
+      <File Name="../../src/ofxLibharu.cpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <Description/>

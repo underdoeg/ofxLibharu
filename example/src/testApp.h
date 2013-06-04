@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxlibharu.h"
+#include "ofxLibharu.h"
 
 class testApp : public ofBaseApp{
 

@@ -1059,8 +1059,8 @@ HPDF_Page_SetWordSpace  (HPDF_Page  page,
 
     attr = (HPDF_PageAttr)page->attr;
 
-    if (value < HPDF_MIN_WORDSPACE || value > HPDF_MAX_WORDSPACE)
-        return HPDF_RaiseError (page->error, HPDF_PAGE_OUT_OF_RANGE, 0);
+    /*if (value < HPDF_MIN_WORDSPACE || value > HPDF_MAX_WORDSPACE)
+        return HPDF_RaiseError (page->error, HPDF_PAGE_OUT_OF_RANGE, 0);*/
 
     if (HPDF_Stream_WriteReal (attr->stream, value) != HPDF_OK)
         return HPDF_CheckError (page->error);

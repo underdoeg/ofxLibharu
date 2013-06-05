@@ -24,7 +24,8 @@ public:
 	    ALIGN_LEFT,
 	    ALIGN_RIGHT,
 	    ALIGN_CENTER,
-	    ALIGN_JUSTIFY
+	    ALIGN_JUSTIFY,
+		ALIGN_JUSTIFY_ALL
 	};
 
 	enum LINE_CAP {
@@ -164,10 +165,11 @@ private:
 	//Font Handling
 	HPDF_Font getTmpFont(string fontName);
 	void setFontSyles();
-	float fontSize;
-	float charSpace;
-	float wordSpace;
-	float textLeading;
+	void drawWord(string word, float x, float y);
+	float fontSize, fontSize_OF;
+	float charSpace, charSpace_OF;
+	float wordSpace, wordSpace_OF;
+	float textLeading, textLeading_OF;
 	string fontName;
 	TEXT_ALIGNMENT textAlignment;
 	HPDF_Font font;

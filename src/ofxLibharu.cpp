@@ -19,6 +19,7 @@ error_handler (HPDF_STATUS   error_no,
 ofxLibharu::ofxLibharu() {
 	setDPI(300);
 	setPageSize(A4);
+	doTransform = false;
 }
 
 ofxLibharu::~ofxLibharu() {
@@ -43,6 +44,7 @@ void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	setOrientation(o);
 	setPageSize(size);
 	setDefaultValues();
+	
 }
 
 void ofxLibharu::createTmpPage() {
@@ -55,6 +57,7 @@ void ofxLibharu::createTmpPage() {
 	tmpPage = HPDF_AddPage(tmpPdf);
 	HPDF_Page_SetSize(tmpPage, HPDF_PAGE_SIZE_A4, HPDF_PAGE_PORTRAIT);
 	HPDF_Page_Concat (tmpPage, 72.0f / dpi, 0, 0, 72.0f / dpi, 0, 0);
+
 }
 
 void ofxLibharu::setDefaultValues() {
@@ -611,4 +614,33 @@ void ofxLibharu::setLineCapStyle(LINE_CAP _lineCap) {
 
 void ofxLibharu::setLineJoinStyle(LINE_JOIN _lineJoin) {
 	lineJoin = _lineJoin;
+}
+
+void ofxLibharu::popMatrix(){
+	HPDF_Page_GRestore(page);
+	doTransform = false;
+}
+
+void ofxLibharu::pushMatrix(){
+	HPDF_Page_GSave(page);
+	doTransform = true;
+}
+
+void ofxLibharu::translate(float x, float y){
+	
+	float posx = convertDistance2Libh(x);
+	float posy = convertDistance2Libh(y); 
+	HPDF_Page_Concat (page, 1,0,0,1, posx,-posy);
+}
+
+void ofxLibharu::rotate(float angle, float originX, float originY){
+			
+    float rad1 = ofDegToRad(angle);
+	float posx = convertX2Libh(originX);
+	float posy = convertY2Libh(originY);
+
+	HPDF_Page_Concat (page, 1,0,0,1, 100,-100);
+    HPDF_Page_Concat (page, cos(rad1), sin(rad1), -sin(rad1), cos(rad1), posx,posy);
+	HPDF_Page_Concat (page, 1,0,0,1, 0,-convertY2Libh(0));
+	
 }

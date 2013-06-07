@@ -64,21 +64,27 @@ void testApp::setup(){
 	pdf.setFillColor(0,0,0);
 	text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 	
-	float tbx=20,tby=100;
+	float tbx=30,tby = 80;
 	float tbWidth = 100;
 	float tbHeight = pdf.getTextBoxHeight(tbWidth,text,fontName,fontsize,textleading,charSpacing,wordSpacing);
-		
+
 	pdf.setStrokeColor(255,0,0);
 	pdf.setLineWidth(.1);
 	pdf.setFillType(OF_OUTLINE);
-	pdf.drawRectangle(tbx,tby,tbWidth,tbHeight);
+
+	
+	pdf.pushMatrix();
+	pdf.rotate(20,tbx+tbWidth*.5,tby+tbHeight*.5);
+	pdf.translate(-tbWidth*.5,-tbHeight*.5);
 	
 	pdf.setLineWidth(.1);
 	for(float y=fontsize; y<=tbHeight; y+=textleading){
-		pdf.drawLine(tbx,tby+y,tbx+tbWidth,tby+y);
+		pdf.drawLine(0,y,tbWidth,y);
 	}
+	pdf.drawRectangle(0,0,tbWidth,tbHeight);
+	pdf.drawTextBox(text, 0,0,tbWidth,tbHeight);
+	pdf.popMatrix();
 	
-	pdf.drawTextBox(text, tbx,tby,tbWidth,tbHeight);
 	
 	pdf.save("test.pdf", true);
 	pdf.openLastSave();

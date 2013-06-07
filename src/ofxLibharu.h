@@ -86,7 +86,12 @@ public:
 	void drawCircle(float x, float y, float radius);
 	void drawEllipse(float x, float y, float width, float height);
 	//void drawPolyLine(ofPolyline polyLine, bool close = false);
-
+	
+	//Transformation
+	void pushMatrix();
+	void rotate(float angle, float originX, float originY);
+	void translate(float x, float y);
+	void popMatrix();
 
 	//Font Handling
 	void setFont(string fontName);
@@ -161,6 +166,10 @@ private:
 	ofFillFlag fillFlag;
 	LINE_CAP lineCap;
 	LINE_JOIN lineJoin;
+	
+	//Transformation
+	bool doTransform;
+	
 
 	//Font Handling
 	HPDF_Font getTmpFont(string fontName);

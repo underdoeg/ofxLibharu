@@ -152,7 +152,7 @@ private:
 	float convertX2OF(float x);
 	float convertY2OF(float y);
 	float convertDistance2OF(float f);
-	void RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K);
+	void RGBToCMYK(float R, float G, float B, float &C, float &M, float &Y, float &K);
 
 	//Graphics
 	void setFillStyles();

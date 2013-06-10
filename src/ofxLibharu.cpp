@@ -212,12 +212,11 @@ float ofxLibharu::convertY2OF(float y) {
 	return pageSize.y - y*1/pixelRatio.y;
 }
 
-
-void ofxLibharu::RGBToCMYK(int R, int G, int B, int &C, int &M, int &Y, int &K) {
+void ofxLibharu::RGBToCMYK(float R, float G, float B, float &C, float &M, float &Y, float &K) {
 	C = 1 - (R / 255);
 	M = 1 - (G / 255);
 	Y = 1 - (B / 255);
-	int TempK = 1;
+	float TempK = 1;
 	if (C < TempK) TempK = C;
 	if (M < TempK) TempK = M;
 	if (Y < TempK) TempK = Y;
@@ -316,6 +315,11 @@ void ofxLibharu::drawTextBox(string text, float x, float y, float width, float h
 		while(defText[defText.size()-1]==' ') {
 			defText = defText.substr(0,defText.size()-1);
 		}
+		
+		//remove manual breaks on enf of line
+		while(defText[defText.size()-1]=='\n') {
+			defText = defText.substr(0,defText.size()-1);
+		}
 
 		//get new text widh
 		float defTextWidth = getTextWidth(defText, fontName, fontSize_OF, charSpace_OF,wordSpace_OF);
@@ -400,7 +404,7 @@ float ofxLibharu::getTextLeading() {
 	return textLeading_OF;
 }
 
-float ofxLibharu::getFontSize(){
+float ofxLibharu::getFontSize() {
 	return fontSize_OF;
 }
 
@@ -563,7 +567,7 @@ void ofxLibharu::drawRectangle(float x, float y, float width, float height) {
 }
 
 void ofxLibharu::setFillColor(float r, float g, float b) {
-	int c, m, y, k;
+	float c, m, y, k;
 	RGBToCMYK(r,g,b,c,m,y,k);
 	setFillColor(c, m, y, k);
 }
@@ -576,7 +580,7 @@ void ofxLibharu::setFillColor(float c, float m, float y, float k) {
 }
 
 void ofxLibharu::setStrokeColor(float r, float g, float b) {
-	int c, m, y, k;
+	float c, m, y, k;
 	RGBToCMYK(r,g,b,c,m,y,k);
 	setStrokeColor(c, m, y, k);
 }
@@ -632,45 +636,45 @@ void ofxLibharu::rotate(float angle, float originX, float originY) {
 }
 
 //Images ---------------------------------------------------------------------------------
-HPDF_Image ofxLibharu::loadImage(string source){
+HPDF_Image ofxLibharu::loadImage(string source) {
 	HPDF_Image image;
-	
+
 	if(ofIsStringInString(source,".jpeg") || ofIsStringInString(source,".jpg")) image = HPDF_LoadJpegImageFromFile(pdf,source.c_str());
 	else if(ofIsStringInString(source,".png")) image = HPDF_LoadPngImageFromFile(pdf,source.c_str());
 	//if(ofIsStringInString(source,".raw")) image = HPDF_LoadRawImageFromFile(pdf,source.c_str());
-	
+
 	return image;
 }
 
-ofVec2f ofxLibharu::getImageSize(string source){
+ofVec2f ofxLibharu::getImageSize(string source) {
 	HPDF_Image image = loadImage(source);
-	
+
 	float width = HPDF_Image_GetWidth(image);
 	float height = HPDF_Image_GetHeight(image);
-	
+
 	return ofVec2f(convertDistance2OF(width),convertDistance2OF(height));
 }
 
 void ofxLibharu::drawImage(string source, float x, float y) {
 	HPDF_Image image = loadImage(source);
-	
+
 	float width = HPDF_Image_GetWidth(image);
 	float height = HPDF_Image_GetHeight(image);
 	float posx = convertX2Libh(x);
 	float posy = convertY2Libh(y)-height;
-		
+
 	HPDF_Page_DrawImage(page,image,posx,posy,width,height);
-	
+
 }
 
 void ofxLibharu::drawImage(string source, float x, float y, float _width, float _height) {
-	
+
 	HPDF_Image image = loadImage(source);
-	
+
 	float width = convertDistance2Libh(_width);
 	float height = convertDistance2Libh(_height);
 	float posx = convertX2Libh(x);
 	float posy = convertY2Libh(y)-height;
-	
+
 	HPDF_Page_DrawImage(page,image,posx,posy,width,height);
 }

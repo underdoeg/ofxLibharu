@@ -47,7 +47,6 @@ public:
 
 	//Document Handling
 	void setup(PAGE_SIZE size = A4, ORIENTATION o = PORTRAIT);
-
 	void save(string path, bool inDataFolder = true);
 	void openLastSave();
 
@@ -57,18 +56,9 @@ public:
 	void setPageSize(float x, float y);
 	void setOrientation(ORIENTATION o);
 	void setDPI(int dpi);
-
 	void newPage(PAGE_SIZE size, ORIENTATION o = PORTRAIT);
 	void newPage(float w, float h);
-
-	void setCmykBackground(float c, float m, float y, float k);
-	void setCmykForeground(float c, float m, float y, float k);
-
-	void disableBackground();
-	void disableForeground();
-
 	void resetStyles();
-
 	ofVec2f getPageSize();
 
 	//Graphics
@@ -87,6 +77,11 @@ public:
 	void drawEllipse(float x, float y, float width, float height);
 	//void drawPolyLine(ofPolyline polyLine, bool close = false);
 	
+	//Images
+	void drawImage(string source, float x, float y);
+	void drawImage(string source, float x, float y, float width, float height);
+	ofVec2f getImageSize(string source);
+	
 	//Transformation
 	void pushMatrix();
 	void rotate(float angle, float originX, float originY);
@@ -101,13 +96,13 @@ public:
 	void setCharSpacing(float charSpace);
 	void setWordSpacing(float wordSpace);
 	void setTextLeading(float textLeading);
-	void resetTextLeading();
 	void drawText(string text, float x, float y);
 	void drawTextBox(string text, float x, float y, float width, float height);
 
 	float getTextWidth(string text, string font, float fontSize, float charSpacing, float wordSpacing);
 	float getTextWidth(string text);
 	float getTextLeading();
+	float getFontSize();
 
 	float getFontDescent(string font, float fontSize);
 	float getFontDescent();
@@ -118,8 +113,11 @@ public:
 	float getFontXHeight(string font, float fontSize);
 	float getFontXHeight();
 
+	int measureText(float width, string text);
 	int measureText(float width, string text, string fontName, float fontSize, float charSpacing, float wordSpacing);
+	int measureTextBox(float width, float height, string text);
 	int measureTextBox(float width, float height, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
+	float getTextBoxHeight(float width, string text);
 	float getTextBoxHeight(float width, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
 
 
@@ -167,9 +165,8 @@ private:
 	LINE_CAP lineCap;
 	LINE_JOIN lineJoin;
 	
-	//Transformation
-	bool doTransform;
-	
+	//Images
+	HPDF_Image loadImage(string source);
 
 	//Font Handling
 	HPDF_Font getTmpFont(string fontName);

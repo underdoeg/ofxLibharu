@@ -19,7 +19,6 @@ error_handler (HPDF_STATUS   error_no,
 ofxLibharu::ofxLibharu() {
 	setDPI(300);
 	setPageSize(A4);
-	doTransform = false;
 }
 
 ofxLibharu::~ofxLibharu() {
@@ -37,14 +36,11 @@ void ofxLibharu::setup(PAGE_SIZE size, ORIENTATION o) {
 	HPDF_SetCurrentEncoder(pdf, encoding.c_str());
 
 	createTmpPage();
-
-	setCmykBackground(0, 0, 0, 1);
-	setCmykForeground(0, 0, 0, 1);
 	newPage();
 	setOrientation(o);
 	setPageSize(size);
 	setDefaultValues();
-	
+
 }
 
 void ofxLibharu::createTmpPage() {
@@ -63,7 +59,7 @@ void ofxLibharu::createTmpPage() {
 void ofxLibharu::setDefaultValues() {
 
 	//font default values
-	setFont("Times-Roman");
+	setFont("Helvetica");
 	setFontSize(16);
 	setTextAlignment(ALIGN_LEFT);
 	setCharSpacing(0);
@@ -185,24 +181,6 @@ void ofxLibharu::newPage() {
 	page = HPDF_AddPage(pdf);
 }
 
-void ofxLibharu::setCmykBackground(float c, float m, float y, float k) {
-	HPDF_Page_SetCMYKFill(page, c, m, y, k);
-	HPDF_Page_Fill(page);
-}
-
-void ofxLibharu::setCmykForeground(float c, float m, float y, float k) {
-	HPDF_Page_SetCMYKStroke(page, c, m, y, k);
-	HPDF_Page_Stroke(page);
-}
-
-void ofxLibharu::disableBackground() {
-	HPDF_Page_Eofill(page);
-}
-
-void ofxLibharu::disableForeground() {
-	HPDF_Page_EofillStroke(page);
-}
-
 ofVec2f ofxLibharu::getPageSize() {
 	return pageSize;
 }
@@ -266,6 +244,10 @@ HPDF_Font ofxLibharu::getTmpFont(string _fontName) {
 	return tmpFont;
 }
 
+int ofxLibharu::measureText(float _width, string _text) {
+	return measureText( _width, _text, fontName, fontSize_OF, charSpace_OF, wordSpace_OF);
+}
+
 int ofxLibharu::measureText(float _width, string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing) {
 
 	float defWidth = convertDistance2Libh(_width-charSpace_OF);
@@ -277,6 +259,10 @@ int ofxLibharu::measureText(float _width, string _text, string _fontName, float 
 	int tmpCharCount = HPDF_Font_MeasureText(getTmpFont(_fontName), (HPDF_BYTE *)_text.c_str(), len, defWidth, defFontSize, defCharSpacing, defWordSpacing, HPDF_TRUE, NULL);
 
 	return tmpCharCount;
+}
+
+float ofxLibharu::getTextBoxHeight(float _width, string _text) {
+	return getTextBoxHeight( _width,  _text, fontName, fontSize_OF, textLeading_OF, charSpace_OF, wordSpace_OF);
 }
 
 float ofxLibharu::getTextBoxHeight(float _width, string _text, string _fontName, float _fontSize, float _textLeading, float _charSpacing, float _wordSpacing) {
@@ -295,6 +281,10 @@ float ofxLibharu::getTextBoxHeight(float _width, string _text, string _fontName,
 	height-= _textLeading;
 	height+=getFontDescent(_fontName,_fontSize)*-1;
 	return height;
+}
+
+int ofxLibharu::measureTextBox(float _width, float _height, string _text) {
+	return measureTextBox(_width, _height, _text, fontName, fontSize_OF, textLeading_OF, charSpace_OF, wordSpace_OF);
 }
 
 int ofxLibharu::measureTextBox(float _width, float _height, string _text, string _fontName, float _fontSize, float _textLeading, float _charSpacing, float _wordSpacing) {
@@ -326,7 +316,7 @@ void ofxLibharu::drawTextBox(string text, float x, float y, float width, float h
 		while(defText[defText.size()-1]==' ') {
 			defText = defText.substr(0,defText.size()-1);
 		}
-		
+
 		//get new text widh
 		float defTextWidth = getTextWidth(defText, fontName, fontSize_OF, charSpace_OF,wordSpace_OF);
 		float defx;
@@ -407,9 +397,11 @@ float ofxLibharu::getTextWidth(string text) {
 }
 
 float ofxLibharu::getTextLeading() {
-	float leading = HPDF_Page_GetTextLeading(page);
-	leading*=fontSize*.001;
-	return convertDistance2OF(leading);
+	return textLeading_OF;
+}
+
+float ofxLibharu::getFontSize(){
+	return fontSize_OF;
 }
 
 float ofxLibharu::getFontXHeight(string _fontName, float _fontSize) {
@@ -512,10 +504,6 @@ void ofxLibharu::setTextLeading(float _textLeading) {
 	textLeading = convertDistance2Libh(_textLeading);
 }
 
-void ofxLibharu::resetTextLeading() {
-	setTextLeading(0);
-}
-
 //Graphics ---------------------------------------------------------------------------------
 
 void ofxLibharu::setFillStyles() {
@@ -616,31 +604,73 @@ void ofxLibharu::setLineJoinStyle(LINE_JOIN _lineJoin) {
 	lineJoin = _lineJoin;
 }
 
-void ofxLibharu::popMatrix(){
+void ofxLibharu::popMatrix() {
 	HPDF_Page_GRestore(page);
-	doTransform = false;
 }
 
-void ofxLibharu::pushMatrix(){
+void ofxLibharu::pushMatrix() {
 	HPDF_Page_GSave(page);
-	doTransform = true;
 }
 
-void ofxLibharu::translate(float x, float y){
-	
+void ofxLibharu::translate(float x, float y) {
+
 	float posx = convertDistance2Libh(x);
-	float posy = convertDistance2Libh(y); 
+	float posy = convertDistance2Libh(y);
 	HPDF_Page_Concat (page, 1,0,0,1, posx,-posy);
 }
 
-void ofxLibharu::rotate(float angle, float originX, float originY){
-			
-    float rad1 = ofDegToRad(angle);
+void ofxLibharu::rotate(float angle, float originX, float originY) {
+
+	float rad1 = ofDegToRad(angle);
 	float posx = convertX2Libh(originX);
 	float posy = convertY2Libh(originY);
 
 	HPDF_Page_Concat (page, 1,0,0,1, 100,-100);
-    HPDF_Page_Concat (page, cos(rad1), sin(rad1), -sin(rad1), cos(rad1), posx,posy);
+	HPDF_Page_Concat (page, cos(rad1), sin(rad1), -sin(rad1), cos(rad1), posx,posy);
 	HPDF_Page_Concat (page, 1,0,0,1, 0,-convertY2Libh(0));
+
+}
+
+//Images ---------------------------------------------------------------------------------
+HPDF_Image ofxLibharu::loadImage(string source){
+	HPDF_Image image;
 	
+	if(ofIsStringInString(source,".jpeg") || ofIsStringInString(source,".jpg")) image = HPDF_LoadJpegImageFromFile(pdf,source.c_str());
+	else if(ofIsStringInString(source,".png")) image = HPDF_LoadPngImageFromFile(pdf,source.c_str());
+	//if(ofIsStringInString(source,".raw")) image = HPDF_LoadRawImageFromFile(pdf,source.c_str());
+	
+	return image;
+}
+
+ofVec2f ofxLibharu::getImageSize(string source){
+	HPDF_Image image = loadImage(source);
+	
+	float width = HPDF_Image_GetWidth(image);
+	float height = HPDF_Image_GetHeight(image);
+	
+	return ofVec2f(convertDistance2OF(width),convertDistance2OF(height));
+}
+
+void ofxLibharu::drawImage(string source, float x, float y) {
+	HPDF_Image image = loadImage(source);
+	
+	float width = HPDF_Image_GetWidth(image);
+	float height = HPDF_Image_GetHeight(image);
+	float posx = convertX2Libh(x);
+	float posy = convertY2Libh(y)-height;
+		
+	HPDF_Page_DrawImage(page,image,posx,posy,width,height);
+	
+}
+
+void ofxLibharu::drawImage(string source, float x, float y, float _width, float _height) {
+	
+	HPDF_Image image = loadImage(source);
+	
+	float width = convertDistance2Libh(_width);
+	float height = convertDistance2Libh(_height);
+	float posx = convertX2Libh(x);
+	float posy = convertY2Libh(y)-height;
+	
+	HPDF_Page_DrawImage(page,image,posx,posy,width,height);
 }

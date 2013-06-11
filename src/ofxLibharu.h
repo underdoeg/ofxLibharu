@@ -90,7 +90,6 @@ public:
 
 	//Font Handling
 	void setFont(string fontName);
-	void setTTFontFromFile(string filename);
 	void setFontSize(float size);
 	void setTextAlignment(TEXT_ALIGNMENT textAlignment);
 	void setCharSpacing(float charSpace);

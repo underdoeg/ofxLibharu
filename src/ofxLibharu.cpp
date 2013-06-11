@@ -249,7 +249,7 @@ int ofxLibharu::measureText(float _width, string _text) {
 
 int ofxLibharu::measureText(float _width, string _text, string _fontName, float _fontSize, float _charSpacing, float _wordSpacing) {
 
-	float defWidth = convertDistance2Libh(_width-charSpace_OF);
+	float defWidth = convertDistance2Libh(_width-_charSpacing);
 	float defFontSize = convertDistance2Libh(_fontSize);
 	float defCharSpacing = convertDistance2Libh(_charSpacing);
 	float defWordSpacing = convertDistance2Libh(_wordSpacing);
@@ -315,7 +315,7 @@ void ofxLibharu::drawTextBox(string text, float x, float y, float width, float h
 		while(defText[defText.size()-1]==' ') {
 			defText = defText.substr(0,defText.size()-1);
 		}
-		
+
 		//remove manual breaks on enf of line
 		while(defText[defText.size()-1]=='\n') {
 			defText = defText.substr(0,defText.size()-1);
@@ -473,14 +473,15 @@ void ofxLibharu::setFontSyles() {
 }
 
 void ofxLibharu::setFont(string _fontName) {
-	fontName = _fontName;
-	font = HPDF_GetFont (pdf, fontName.c_str(), NULL);
-}
+	
+	if(ofIsStringInString(_fontName,".ttf")) {
+		const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, _fontName.c_str(), HPDF_TRUE);
+		font = HPDF_GetFont (pdf, ttfFont, NULL);
+	} else {
+		font = HPDF_GetFont (pdf, _fontName.c_str(), NULL);
+	}
 
-void ofxLibharu::setTTFontFromFile(string filename) {
-	const char *ttfFont = HPDF_LoadTTFontFromFile(pdf, filename.c_str(), HPDF_TRUE);
-	fontName = filename;
-	font = HPDF_GetFont(pdf, ttfFont, encoding.c_str());
+	fontName = _fontName;
 }
 
 void ofxLibharu::setTextAlignment(TEXT_ALIGNMENT _textAlignment) {

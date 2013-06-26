@@ -39,8 +39,8 @@ void testApp::setup(){
 	
 	//DRAW ROTATED TEXT BOX
 	string fontPath = ofToDataPath("SimLt___D.ttf");
-	float fontSize = 1;
-	float leading = 2;
+	float fontSize = 5;
+	float leading = 6;
 	float charSpacing = .2;
 	float wordSpacing = .2;
 	
@@ -52,10 +52,10 @@ void testApp::setup(){
 	pdf.setWordSpacing(wordSpacing);
 	pdf.setFillColor(0,0,0);
 	
+	
 	string text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 	float tbx = 30,tby = 80;
 	float tbWidth = 100;
-	//float tbHeight = pdf.getTextBoxHeight(tbWidth,text);
 	
 	float tbHeight = pdf.getTextBoxHeight(tbWidth,text,fontPath,fontSize,leading,charSpacing,wordSpacing);
 
@@ -64,9 +64,9 @@ void testApp::setup(){
 	pdf.setLineWidth(.1);
 	pdf.setFillType(OF_OUTLINE);
 
-	pdf.pushMatrix();
-	pdf.rotate(90,tbx+tbWidth*.5,tby+tbHeight*.5);
-	pdf.translate(-tbWidth*.5,-tbHeight*.5);
+	//pdf.pushMatrix();
+	//pdf.rotate(90,tbx+tbWidth*.5,tby+tbHeight*.5);
+	//pdf.translate(-tbWidth*.5,-tbHeight*.5);
 	
 	for(float y=pdf.getFontSize(); y<=tbHeight; y+=pdf.getTextLeading()){
 		pdf.drawLine(0,y,tbWidth,y);
@@ -74,7 +74,7 @@ void testApp::setup(){
 	pdf.drawRectangle(0,0,tbWidth,tbHeight);
 	pdf.drawTextBox(text, 0,0,tbWidth,tbHeight);
 	
-	pdf.popMatrix();
+	//pdf.popMatrix();
 	
 	
 	//SAVE PDF

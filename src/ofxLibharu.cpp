@@ -321,6 +321,7 @@ int ofxLibharu::measureTextBox(float _width, float _height, string _text, string
 void ofxLibharu::drawTextBox(string text, float x, float y, float width, float height) {
 
 	//float maxHeight = height-getFontDescent(fontName,convertDistance2OF(fontSize))*-1;
+	int countLetters = 0;
 	for(float ypos=fontSize_OF; ypos<=height; ypos+=textLeading_OF) {
 		int charCount = measureText(width,text,fontName,fontSize_OF,charSpace_OF,wordSpace_OF);
 		string defText = text.substr(0,charCount);
@@ -386,14 +387,35 @@ void ofxLibharu::drawWord(string text, float x, float y) {
 	HPDF_Page_EndText(page);
 }
 
-void ofxLibharu::drawText(string text, float x, float y) {
+bool isSelected(int selectFrom, int selectLength, int from, int length){
+	
+	if(selectFrom>=from && selectFrom <=from+length) return true;
+	if(selectFrom+selectLength>=from && selectFrom+selectLength<=from+length) return true;
+	if(selectFrom<=from && selectFrom+selectLength>=from+length) return true;
+	
+	return false;
+}
+
+
+void ofxLibharu::drawText(string text, float x, float y){
+	drawText(text,x,y,0);
+}
+
+void ofxLibharu::drawText(string text, float x, float y, int prevCharCount) {
 	vector<string> words = ofSplitString(text," ");
 
 	float xpos = x;
+	int charCount = prevCharCount;
 	for(int i=0; i<words.size(); i++) {
-		float wordWidth = getTextWidth(words[i]+" ", fontName, fontSize_OF, charSpace_OF, wordSpace_OF);
+		string prevFontName = fontName;
+		string curWord = words[i]+" ";
+		charCount+=curWord.size();
+		
+		float wordWidth = getTextWidth(curWord, fontName, fontSize_OF, charSpace_OF, wordSpace_OF);
 		drawWord(words[i],xpos,y);
 		xpos+=wordWidth+convertDistance2OF(HPDF_Page_GetCharSpace(page));
+		
+		setFont(prevFontName);
 	}
 }
 
@@ -693,4 +715,3 @@ void ofxLibharu::drawImage(string source, float x, float y, float _width, float 
 
 	HPDF_Page_DrawImage(page,image,posx,posy,width,height);
 }
-

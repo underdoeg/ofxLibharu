@@ -178,6 +178,7 @@ private:
 	HPDF_Font getTmpFont(string fontName);
 	void setFontStyles();
 	void drawWord(string word, float x, float y);
+	void drawText(string text, float x, float y, int prevCharCount);
 	float fontSize, fontSize_OF;
 	float charSpace, charSpace_OF;
 	float wordSpace, wordSpace_OF;

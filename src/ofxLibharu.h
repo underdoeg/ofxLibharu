@@ -41,6 +41,11 @@ public:
 	    LINE_JOIN_BEVEL,
 	    LINE_JOIN_EOF
 	};
+	
+	enum UNIT{
+		MM,
+		CM
+	};
 
 	ofxLibharu();
 	~ofxLibharu();
@@ -56,6 +61,7 @@ public:
 	void setPageSize(float x, float y);
 	void setOrientation(ORIENTATION o);
 	void setDPI(int dpi);
+	void setUnit(UNIT unit);
 	void newPage(PAGE_SIZE size, ORIENTATION o = PORTRAIT);
 	void newPage(float w, float h);
 	void resetStyles();
@@ -121,7 +127,8 @@ public:
 
 
 private:
-
+	float applyUnit(float value);
+	
 	//Document Handling
 	ofVec2f pixelRatio;
 	ORIENTATION orientation;
@@ -169,7 +176,7 @@ private:
 
 	//Font Handling
 	HPDF_Font getTmpFont(string fontName);
-	void setFontSyles();
+	void setFontStyles();
 	void drawWord(string word, float x, float y);
 	float fontSize, fontSize_OF;
 	float charSpace, charSpace_OF;
@@ -178,7 +185,8 @@ private:
 	string fontName;
 	TEXT_ALIGNMENT textAlignment;
 	HPDF_Font font;
-
+	
+	UNIT unit;
 };
 
 #endif // OFXLIBHARU_H

@@ -394,12 +394,19 @@ bool isSelected(int selectFrom, int selectLength, int from, int length) {
 	return false;
 }
 
+void ofxLibharu::beginText()
+{
+	HPDF_Page_BeginText(page);
+	isFontDirty = true;
+}
+
+void ofxLibharu::endText()
+{
+	HPDF_Page_EndText(page);
+}
+
 void ofxLibharu::drawChar(char character, float x, float y) {
 	setFontStyles();
-	/*
-	char* c = new char[1];
-	c[0] = character;
-	*/
 	HPDF_Page_TextOut(page, convertX2Libh(x), convertY2Libh(y), &character);
 }
 
@@ -574,8 +581,11 @@ void ofxLibharu::setTextLeading(float _textLeading) {
 //Graphics ---------------------------------------------------------------------------------
 
 void ofxLibharu::setFillStyles() {
+	if(!isStyleDirty)
+		return;
 	HPDF_Page_SetCMYKFill(page,fillColor.c, fillColor.m, fillColor.y, fillColor.k);
 	HPDF_Page_SetCMYKStroke(page,strokeColor.c, strokeColor.m, strokeColor.y, strokeColor.k);
+	isStyleDirty = false;
 }
 
 void ofxLibharu::setGraphicStyles() {
@@ -640,6 +650,7 @@ void ofxLibharu::setFillColor(float c, float m, float y, float k) {
 	fillColor.m = m;
 	fillColor.y = y;
 	fillColor.k = k;
+	isStyleDirty = true;
 }
 
 void ofxLibharu::setStrokeColor(float r, float g, float b) {
@@ -653,6 +664,7 @@ void ofxLibharu::setStrokeColor(float c, float m, float y, float k) {
 	strokeColor.m = m;
 	strokeColor.y = y;
 	strokeColor.k = k;
+	isStyleDirty = true;
 }
 
 void ofxLibharu::setLineWidth(float _width) {

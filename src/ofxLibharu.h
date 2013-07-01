@@ -125,8 +125,8 @@ public:
 	int measureTextBox(float width, float height, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
 	float getTextBoxHeight(float width, string text);
 	float getTextBoxHeight(float width, string text, string fontName, float fontSize, float textLeading, float charSpacing, float wordSpacing);
-
-
+	void beginText();
+	void endText();
 private:
 	float applyUnit(float value);
 	
@@ -191,6 +191,7 @@ private:
 	UNIT unit;
 	
 	bool isFontDirty;
+	bool isStyleDirty;
 };
 
 #endif // OFXLIBHARU_H

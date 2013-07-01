@@ -103,6 +103,7 @@ public:
 	void setTextLeading(float textLeading);
 	void drawText(string text, float x, float y);
 	void drawTextBox(string text, float x, float y, float width, float height);
+	void drawChar(char character, float x, float y);
 
 	float getTextWidth(string text, string font, float fontSize, float charSpacing, float wordSpacing);
 	float getTextWidth(string text);
@@ -188,6 +189,8 @@ private:
 	HPDF_Font font;
 	
 	UNIT unit;
+	
+	bool isFontDirty;
 };
 
 #endif // OFXLIBHARU_H
